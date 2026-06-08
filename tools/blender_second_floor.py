@@ -86,11 +86,18 @@ box(HX0, HX1, HY0, HY1, PLINTH, PLINTH+S1H, STUCCO, "story1")
 box(HX0-0.6, HX1+0.6, HY0-0.6, HY1+0.6, PLINTH+S1H, PLINTH+S1H+ROOF, TRIM, "fascia1")
 ROOF_Z = PLINTH + S1H + ROOF      # top of existing flat roof — 2nd floor sits here
 
-# window bands (front + bay) on first story
+# window bands (front + bay) on first story, with dark recessed frames
 def windows(x0, x1, y, z0, z1, depth=0.3):
+    box(x0-0.3, x1+0.3, y-depth-0.15, y+depth+0.15, z0-0.4, z1+0.4, TRIM, "winframe")
     box(x0, x1, y-depth, y+depth, z0, z1, GLASS, "win")
 windows(HX0+4, HX1-4, HY0, PLINTH+3.0, PLINTH+8.5)          # front glazing
 windows(HX0+4, HX1-4, HY1, PLINTH+3.0, PLINTH+8.5)          # bay glazing
+
+# front driveway pavers + entry colonnade (matches the photo's column screen)
+plane(13, 47, 0, 19, 0.03, ROADM, "driveway")
+for cx in range(19, 30, 2):
+    box(cx-0.25, cx+0.25, HY0-0.4, HY0+0.4, PLINTH, PLINTH+S1H, STUCCO, "col")
+box(22.5, 25.5, HY0-0.2, HY0+0.2, PLINTH, PLINTH+7, WOOD, "frontdoor")
 
 # ---------------- proposed SECOND FLOOR on the flat roof ----------------
 box(S2X0, S2X1, S2Y0, S2Y1, ROOF_Z, ROOF_Z+S2H, STUCCO, "story2")

@@ -10,7 +10,15 @@ from the **boundary survey** (Lot 60′×150′, canal-front, Flood AE / BFE 8.0
 > in [../docs/05](../docs/05-ai-3d-rendering-guide.md). For stamped drawings, you
 > need a licensed architect/engineer ([../docs/04](../docs/04-architect-shortlist.md)).
 
-## Files
+## Subfolders
+
+- **`plans/`** — schematic **floor plans** (ground + new second) and **elevations**
+  (front + bay). Generate with `python3 tools/floor_plans.py`. See
+  [../docs/10](../docs/10-schematic-design.md).
+- **`blender/`** — articulated **3D model** renders (Blender/Cycles): bay hero,
+  street, aerial. Generate with `python3 tools/blender_second_floor.py`.
+
+## Files (early massing study)
 
 | File | What it is |
 |------|-----------|
