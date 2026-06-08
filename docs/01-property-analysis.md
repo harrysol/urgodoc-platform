@@ -1,5 +1,23 @@
 # 01 — Property Analysis
 
+## ✅ Confirmed from the boundary survey (M.E. Land Services)
+
+| Item | Value |
+|------|-------|
+| Legal | **Lot 5, Block D, Biscayne Beach 3rd Section**, Plat Book 47, Pg 103, Miami-Dade |
+| Lot size | **60.00′ (Hawthorne frontage) × 150.00′ deep ≈ 9,000 sq ft** |
+| **Waterfront** | **Rear lot line abuts a CANAL** (north). Front on Hawthorne Ave (south). |
+| Existing | One-story CBS residence #8220, with **pool + wood deck** toward the canal |
+| **Flood Zone** | **AE** — a mandatory-insurance, regulated flood zone |
+| **Base Flood Elevation** | **8.0 ft (NGVD)** — finished floor must meet/exceed this + freeboard |
+| FIRM | Panel **12086C0307L**, Community **120651**, effective **9/11/2009** |
+| Survey note | ⚠️ **"Pavers and fences encroach over the south lot line"** — resolve before building |
+
+**What changed vs. earlier assumptions:** this is a **canal-front (waterfront)
+lot**, which adds waterfront setback rules, seawall/dock considerations, and a
+firm flood mandate (Zone AE, BFE 8.0′). These materially affect the second-floor
+design — see [docs/02](docs/02-zoning-permits-miami.md) and [docs/03](docs/03-feasibility-second-floor.md).
+
 ## What public records show
 
 8220 Hawthorne Ave, Miami Beach, FL 33141:

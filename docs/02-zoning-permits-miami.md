@@ -30,12 +30,29 @@ US. For a vertical addition this means:
 - The whole load path (new floor → existing walls → foundation) must be
   engineered for HVHZ wind uplift. **This requires a licensed engineer.**
 
-## Flood / FEMA
+## Flood / FEMA — CONFIRMED for this lot
 
-Much of 33141 is in a **FEMA flood zone**. If so, the **finished floor must sit
-at or above the Base Flood Elevation (BFE)** (often +freeboard). For a substantial
-renovation this can require bringing the *whole* structure into compliance —
-which interacts directly with the height cap above.
+The survey confirms **Flood Zone AE, Base Flood Elevation 8.0 ft (NGVD)** (FIRM
+panel 12086C0307L). This is firm, not a maybe:
+
+- **Finished floor must be at/above BFE 8.0′ + Miami Beach freeboard.** New/
+  substantially improved construction must comply.
+- A second-floor addition can be a **"substantial improvement"** (cost ≥ 50% of
+  the structure's value) — which can trigger bringing the **whole house** into
+  flood compliance (i.e., raising the ground floor). That interacts directly with
+  the height cap: raised floor + two stories must still fit under max height.
+- Mandatory **flood insurance**; elevation choices drive premiums.
+
+## Waterfront (canal) considerations — CONFIRMED
+
+The rear lot line is on a **canal**. That adds:
+
+- **Waterfront setback** from the canal/seawall (Miami Beach has a specific
+  rear/waterfront yard requirement — confirm the dimension with Planning).
+- **Seawall** condition/ownership and any required repair/cap elevation.
+- Building/zoning review may be more involved for waterfront parcels.
+- The **south-line paver/fence encroachment** noted on the survey should be
+  cleared up (survey/legal) before you finalize the footprint.
 
 ## Permit path (typical sequence)
 

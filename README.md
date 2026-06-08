@@ -17,15 +17,25 @@ Project workspace for adding a **second floor** to the single-family home at
 | Item | Value |
 |------|-------|
 | Address | 8220 Hawthorne Ave, Miami Beach, FL 33141 |
-| Type | Single-family residence |
-| Current | 3 bed / 2 bath, ~2,874 sq ft |
-| Year built | 1955 |
+| Legal | Lot 5, Block D, Biscayne Beach 3rd Section (PB 47, Pg 103) |
+| Type | Single-family residence (CBS), 3 bed / 2 bath, ~2,874 sq ft, built 1955 |
+| Lot | **60′ × 150′ ≈ 9,000 sq ft — canal-front (rear on a canal), pool + deck** |
+| Flood | **Zone AE, Base Flood Elevation 8.0′** (FIRM 12086C0307L) |
 | Jurisdiction | City of Miami Beach + Miami-Dade County (HVHZ) |
 | Last sale | ~$1.12M (2015) |
 
-*(Confirm exact lot size, zoning district, and FEMA flood zone from the
-[Miami-Dade Property Appraiser](https://apps.miamidadepa.gov/PropertySearch/)
-before doing anything — see [docs/01](docs/01-property-analysis.md).)*
+*Lot/flood data above is **confirmed from the boundary survey**. Still verify the
+exact zoning district, max height, setbacks and FAR with
+[Miami Beach Planning](https://www.miamibeachfl.gov/city-hall/planning/) — see
+[docs/01](docs/01-property-analysis.md).*
+
+## 3D massing renders
+
+A concept 3D massing (built from the survey) lives in [`renders/`](renders/):
+open **[`renders/interactive-3d-model.html`](renders/interactive-3d-model.html)**
+in a browser to orbit the model and toggle the second floor on/off, or see the
+static PNGs. **Concept massing only — not photoreal, not for permit.** See
+[renders/README](renders/README.md).
 
 ## How to use this repo
 
@@ -44,9 +54,10 @@ before doing anything — see [docs/01](docs/01-property-analysis.md).)*
 
 ## Status checklist
 
-- [ ] Pull official property record + survey + flood zone
-- [ ] Confirm zoning district, max height, setbacks, FAR/lot coverage
-- [ ] Generate concept massing + AI renderings (DIY phase)
+- [x] Pull official property record + survey + flood zone *(survey reviewed: Lot 60×150, canal-front, Flood AE / BFE 8.0)*
+- [ ] Confirm zoning district, max height, setbacks, FAR/lot coverage *(incl. waterfront setback)*
+- [ ] Resolve south-line paver/fence encroachment noted on survey
+- [x] Generate concept massing *(see `renders/`)* — next: photoreal AI render from a real photo
 - [ ] Shortlist 3 architects, request fee proposals
 - [ ] Structural feasibility review (can foundation/walls take a 2nd story?)
 - [ ] Select architect → schematic design → permit set (signed/sealed)

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>8220 Hawthorne Ave — 3D Massing (Existing vs. Second Floor)</title>
+<style>
+  html,body{margin:0;height:100%;background:#cfe3ef;font-family:system-ui,Arial,sans-serif;overflow:hidden}
+  body{background:linear-gradient(#bcd6ea,#e7f0f6)}
+  #ui{position:fixed;top:12px;left:12px;background:rgba(255,255,255,.92);padding:12px 14px;
+      border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);max-width:300px;font-size:13px;color:#222}
+  #ui h1{font-size:15px;margin:0 0 6px}
+  #ui p{margin:4px 0;color:#555;font-size:12px;line-height:1.35}
+  button{margin-top:8px;width:100%;padding:9px;border:0;border-radius:8px;background:#1f6fb2;
+         color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  button:hover{background:#185a91}
+  .tag{display:inline-block;background:#eef3f7;color:#345;border-radius:5px;padding:2px 6px;margin:2px 3px 0 0;font-size:11px}
+  #note{position:fixed;bottom:10px;left:12px;right:12px;text-align:center;color:#456;font-size:11px}
+</style>
+</head>
+<body>
+<div id="ui">
+  <h1>8220 Hawthorne Ave</h1>
+  <p>Miami Beach, FL 33141 · Lot 5, Block D</p>
+  <div>
+    <span class="tag">Lot 60′ × 150′</span><span class="tag">Canal-front</span>
+    <span class="tag">Flood AE</span><span class="tag">BFE 8.0′</span>
+  </div>
+  <p>Drag to orbit · scroll to zoom · right-drag to pan.</p>
+  <button id="toggle">Toggle Second Floor</button>
+  <p id="state"><b>Showing: PROPOSED (two story)</b></p>
+  <p>Conceptual massing only — not to scale, not a permit document.</p>
+</div>
+<div id="note">Built from the boundary survey. Wood-tone box = proposed stepped-back second floor.</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---- units: 1 unit = 1 foot. Origin front-left on Hawthorne Ave ----
+const LOT_W=60, LOT_D=150, FF=8.0, S1=11, S2=10, STEP=8;
+const HX0=9.5, HX1=50.5, HY0=20, HY1=84;       // house footprint
+const S2Y0=HY0+STEP;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xcfe3ef);
+scene.fog=new THREE.Fog(0xcfe3ef, 180, 420);
+
+const camera=new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.5, 2000);
+camera.position.set(110, 70, 120);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+document.body.appendChild(renderer.domElement);
+
+const controls=new OrbitControls(camera, renderer.domElement);
+controls.target.set(LOT_W/2, 8, LOT_D/2);
+controls.enableDamping=true;
+
+// lights — Miami sun
+scene.add(new THREE.HemisphereLight(0xffffff, 0x88aa77, 0.7));
+const sun=new THREE.DirectionalLight(0xfff6e8, 1.1);
+sun.position.set(80, 140, 40); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-120,right:120,top:120,bottom:-120,near:1,far:400});
+scene.add(sun);
+
+function addBox(x0,x1,y0,y1,z0,z1,color,{rough=0.85,metal=0}={}){
+  const g=new THREE.BoxGeometry(x1-x0, z1-z0, y1-y0);
+  const m=new THREE.Mesh(g, new THREE.MeshStandardMaterial({color, roughness:rough, metalness:metal}));
+  m.position.set((x0+x1)/2,(z0+z1)/2,(y0+y1)/2);
+  m.castShadow=true; m.receiveShadow=true; scene.add(m); return m;
+}
+function addPlane(x0,x1,y0,y1,z,color,recv=true){
+  const g=new THREE.PlaneGeometry(x1-x0,y1-y0);
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color,roughness:0.95}));
+  m.rotation.x=-Math.PI/2; m.position.set((x0+x1)/2,z,(y0+y1)/2);
+  m.receiveShadow=recv; scene.add(m); return m;
+}
+
+// ground, street, canal, lot
+addPlane(-10, LOT_W+10, -18, LOT_D+30, -0.05, 0x9fc77f);     // grass
+addPlane(0, LOT_W, -18, 0, 0.0, 0xa9a9a9);                   // Hawthorne Ave
+addPlane(-10, LOT_W+10, LOT_D, LOT_D+30, -0.02, 0x3f9fd0);   // canal
+// seawall
+addBox(0, LOT_W, LOT_D-1.5, LOT_D, -1, 1.5, 0xb8b2a6);
+// pool + deck (toward canal)
+addBox(18,42, 96,120, -1, 0.2, 0x2f9fd6, {rough:0.25});      // pool water
+addBox(13,47, 120,134, 0, 0.8, 0xc8a978);                    // wood deck
+// raised finished-floor platform (flood AE / BFE)
+addBox(HX0-2,HX1+2, HY0-2,HY1+2, 0, FF, 0xd9d2c5);
+
+// first story (always shown)
+addBox(HX0,HX1, HY0,HY1, FF, FF+S1, 0xf3f1ea);
+
+// SECOND STORY group (toggle)
+const second=new THREE.Group();
+const s2=addBox(HX0,HX1, S2Y0,HY1, FF+S1, FF+S1+S2, 0xe3cfa8);
+second.add(s2);
+// rooftop terrace railing over stepped-back portion
+const terr=addBox(HX0,HX1, HY0,S2Y0, FF+S1, FF+S1+0.4, 0xb9c4d2);
+second.add(terr);
+// re-parent: remove from scene, group manages visibility
+scene.remove(s2); scene.remove(terr); scene.add(second);
+
+// first-story flat roof (only visible when second floor is OFF)
+const roof1=addBox(HX0,HX1, HY0,HY1, FF+S1, FF+S1+0.4, 0xcfc7b6);
+
+let proposed=true;
+function apply(){
+  second.visible=proposed;
+  roof1.visible=!proposed;
+  document.getElementById('state').innerHTML =
+    proposed ? '<b>Showing: PROPOSED (two story)</b>'
+             : '<b>Showing: EXISTING (one story)</b>';
+}
+apply();
+document.getElementById('toggle').onclick=()=>{proposed=!proposed; apply();};
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+(function loop(){requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera);})();
+</script>
+</body>
+</html>
