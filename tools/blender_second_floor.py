@@ -22,11 +22,12 @@ scene = bpy.context.scene
 LOT_W, LOT_D = 60.0, 150.0
 PLINTH = 1.5                       # modest finished-floor lift above grade
 S1H, S2H = 11.0, 10.0
-HX0, HX1 = 9.5, 50.5               # house footprint x
-HY0, HY1 = 20.0, 84.0             # house footprint y (front->bay)
+# footprint scaled to the LiDAR scan: ~48' wide x ~54' deep, on the 60' lot
+HX0, HX1 = 6.0, 54.0               # house footprint x (width ~48')
+HY0, HY1 = 20.0, 74.0             # house footprint y (front->bay, depth ~54')
 ROOF = 0.6
 # second floor: stepped back from street, sits on the flat roof
-S2X0, S2X1 = 12.0, 48.0
+S2X0, S2X1 = 10.0, 50.0
 S2Y0, S2Y1 = 34.0, HY1            # opened toward the bay (rear)
 
 def mat(name, color, rough=0.7, metal=0.0, transmission=0.0, emit=0.0):
