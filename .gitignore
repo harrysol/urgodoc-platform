@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# CAD build artifacts (regenerate with tools/)
+cad/cad_preview.png
