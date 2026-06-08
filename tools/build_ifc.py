@@ -28,6 +28,9 @@ s = run("root.create_entity", model, ifc_class="IfcBuildingStorey", name="Second
 run("aggregate.assign_object", model, relating_object=proj, products=[site])
 run("aggregate.assign_object", model, relating_object=site, products=[bldg])
 run("aggregate.assign_object", model, relating_object=bldg, products=[g, s])
+# storey elevations (metres)
+g.Elevation = float(PLINTH)
+s.Elevation = float(PLINTH + S1H + 0.7*FT)
 
 def mat(x, y, z, rot=False):
     m = np.eye(4)
@@ -68,6 +71,37 @@ storey_shell(g, HX0, HX1, HY0, HY1, PLINTH, S1H, "L1")
 ROOF_Z = PLINTH + S1H + TH
 storey_shell(s, S2X0, S2X1, S2Y0, S2Y1, ROOF_Z, S2H, "L2")
 slab(s, S2X0, S2X1, HY1, HY1+9*FT, ROOF_Z, "Bay Terrace")
+
+# ---- rooms as IfcSpace (volumes), with names + floor areas ----
+def space(storey, x0, x1, y0, y1, zb, h, name):
+    x0,x1,y0,y1 = x0*FT,x1*FT,y0*FT,y1*FT
+    try:
+        sp = run("root.create_entity", model, ifc_class="IfcSpace", name=name)
+        sp.LongName = name
+        poly = [(0,0), (x1-x0,0), (x1-x0,y1-y0), (0,y1-y0)]
+        rep = run("geometry.add_slab_representation", model, context=body, depth=h, polyline=poly)
+        run("geometry.assign_representation", model, product=sp, representation=rep)
+        run("geometry.edit_object_placement", model, product=sp, matrix=mat(x0, y0, zb))
+        run("aggregate.assign_object", model, relating_object=storey, products=[sp])
+        area_sf = ((x1-x0)/FT) * ((y1-y0)/FT)
+        ps = run("pset.add_pset", model, product=sp, name="Pset_SpaceCommon")
+        run("pset.edit_pset", model, pset=ps, properties={"Reference": name,
+            "NetFloorArea_sf": round(area_sf, 0)})
+    except Exception as e:
+        print("space skipped", name, e)
+
+# Ground floor program (feet, within footprint x9.5..50.5, y20..84)
+GF = [(9.5,24,20,40,"Bedroom 2"),(24,36,20,40,"Foyer / Stair"),(36,50.5,20,40,"Bedroom 3"),
+      (9.5,24,40,58,"Den / Office"),(24,36,40,58,"Hall"),(36,50.5,40,58,"Kitchen"),
+      (9.5,50.5,58,84,"Great Room (Living / Dining)")]
+for (x0,x1,y0,y1,nm) in GF:
+    space(g, x0,x1,y0,y1, PLINTH+TH, S1H-TH, nm)
+
+# Second floor program (feet, within x12..48, y34..84)
+SF = [(12,30,34,54,"Bedroom 4 / Guest"),(30,48,34,54,"Office / Loft"),
+      (12,34,54,84,"Primary Bedroom"),(34,48,54,84,"Primary Bath + WIC")]
+for (x0,x1,y0,y1,nm) in SF:
+    space(s, x0,x1,y0,y1, ROOF_Z+TH, S2H-TH, nm)
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "cad")
 os.makedirs(OUT, exist_ok=True)

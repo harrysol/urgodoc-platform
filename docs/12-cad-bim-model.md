@@ -11,7 +11,7 @@ the actual CAD files itself:
 
 | File | Format | Open with |
 |------|--------|-----------|
-| `8220_hawthorne_2story.ifc` | **IFC4 BIM** (2 storeys, 8 walls, 3 slabs, terrace) | Revit, ArchiCAD, Bonsai/BlenderBIM, [free IFC viewer](https://viewer.ifcjs.io) / usBIM.viewer |
+| `8220_hawthorne_2story.ifc` | **IFC4 BIM**: 2 storeys (with elevations), 8 walls, 3 slabs, bay terrace, **11 named rooms (IfcSpace) with floor areas** | Revit, ArchiCAD, Bonsai/BlenderBIM, [free IFC viewer](https://viewer.ifcjs.io) / usBIM.viewer |
 | `8220_hawthorne_2story.glb` | glTF 3D | Blender, [gltf-viewer](https://gltf-viewer.donmccurdy.com), Windows 3D Viewer, web |
 | `8220_hawthorne_2story.obj` | OBJ 3D | SketchUp, Rhino, Cinema4D, MeshLab, almost anything |
 | `cad_preview.png` | preview | quick look |
@@ -25,8 +25,13 @@ permit drawings, instead of redrawing from scratch.
 - `tools/export_cad.py` — Blender (`bpy`) builds a hollow two-storey shell
   (walls + slabs + roof + bay terrace + entry colonnade) and exports glTF/OBJ.
 - `tools/build_ifc.py` — IfcOpenShell builds the IFC4 BIM (project → site →
-  building → 2 storeys → walls/slabs), dimensioned from the survey (lot 60×150,
-  footprint ~41×64, second floor stepped back ~34×46, BFE-aware plinth).
+  building → 2 storeys → walls/slabs + **IfcSpace rooms with names & areas**),
+  dimensioned from the survey (lot 60×150, footprint ~41×64, second floor stepped
+  back ~34×46, BFE-aware plinth). Rooms:
+  - **Ground:** Bedroom 2, Foyer/Stair, Bedroom 3, Den/Office, Hall, Kitchen,
+    Great Room (~1,066 sf).
+  - **Second (new):** Bedroom 4/Guest, Office/Loft, Primary Bedroom, Primary
+    Bath + WIC.
 
 Edit the dimensions at the top of either script and re-run to regenerate.
 
