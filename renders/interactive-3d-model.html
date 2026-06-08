@@ -31,7 +31,7 @@
   <p id="state"><b>Showing: PROPOSED (two story)</b></p>
   <p>Conceptual massing only — not to scale, not a permit document.</p>
 </div>
-<div id="note">Built from the boundary survey. Wood-tone box = proposed stepped-back second floor.</div>
+<div id="note">Street side = Hawthorne Ave (front).  Far side = open bay / west sunset views.  Wood-tone deck on the bay side = proposed second-floor primary-suite terrace.</div>
 
 <script type="importmap">
 { "imports": {
@@ -103,13 +103,19 @@ addBox(HX0,HX1, HY0,HY1, FF, FF+S1, 0xf3f1ea);
 
 // SECOND STORY group (toggle)
 const second=new THREE.Group();
-const s2=addBox(HX0,HX1, S2Y0,HY1, FF+S1, FF+S1+S2, 0xe3cfa8);
+const z1=FF+S1, z2=FF+S1+S2;
+const s2=addBox(HX0,HX1, S2Y0,HY1, z1, z2, 0xf1ece1);            // white stucco mass
 second.add(s2);
-// rooftop terrace railing over stepped-back portion
-const terr=addBox(HX0,HX1, HY0,S2Y0, FF+S1, FF+S1+0.4, 0xb9c4d2);
+const terr=addBox(HX0,HX1, HY0,S2Y0, z1, z1+0.4, 0xb9c4d2);     // front rooftop over step
 second.add(terr);
-// re-parent: remove from scene, group manages visibility
-scene.remove(s2); scene.remove(terr); scene.add(second);
+// PRIMARY-SUITE TERRACE facing the BAY (water side) — the key view move
+const baydeck=addBox(HX0+3,HX1-3, HY1,HY1+9, z1, z1+0.6, 0xc8a978);
+second.add(baydeck);
+const rail=addBox(HX0+3,HX1-3, HY1+8.5,HY1+9, z1, z1+3.4, 0x9fc3dd, {rough:0.1});
+rail.material.transparent=true; rail.material.opacity=0.35;
+second.add(rail);
+// re-parent into the group
+[s2,terr,baydeck,rail].forEach(m=>scene.remove(m)); scene.add(second);
 
 // first-story flat roof (only visible when second floor is OFF)
 const roof1=addBox(HX0,HX1, HY0,HY1, FF+S1, FF+S1+0.4, 0xcfc7b6);

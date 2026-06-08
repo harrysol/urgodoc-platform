@@ -72,16 +72,17 @@ def build(ax, proposed: bool):
     # First story
     box(ax, HX0, HX1, HY0, HY1, FF, FF+STORY1_H, "#f3f1ea", 1.0)
     # Flat roof slab for first story (only where no second floor)
+    z1, z2 = FF+STORY1_H, FF+STORY1_H+STORY2_H
     if proposed:
-        # Second story (stepped back), wood-accent tone
-        box(ax, S2X0, S2X1, S2Y0, S2Y1, FF+STORY1_H, FF+STORY1_H+STORY2_H,
-            "#e7d8bf", 1.0)
-        # roof slab over second story
-        flat(ax, S2X0, S2X1, S2Y0, S2Y1, FF+STORY1_H+STORY2_H, "#cfc7b6")
-        # front terrace on top of stepped-back portion (rooftop over step)
-        flat(ax, HX0, HX1, HY0, S2Y0, FF+STORY1_H, "#bfcad6")
+        # Second story (stepped back from street), white + wood-accent tone
+        box(ax, S2X0, S2X1, S2Y0, S2Y1, z1, z2, "#f1ece1", 1.0)
+        flat(ax, S2X0, S2X1, S2Y0, S2Y1, z2, "#cfc7b6")          # flat roof slab
+        flat(ax, HX0, HX1, HY0, S2Y0, z1, "#bfcad6")             # front rooftop over step
+        # PRIMARY-SUITE TERRACE facing the BAY (water/west, rear) — the key view move
+        box(ax, HX0+3, HX1-3, HY1, HY1+9, z1, z1+0.6, "#c8a978") # cantilevered deck
+        box(ax, HX0+3, HX1-3, HY1+8.5, HY1+9, z1, z1+3.4, "#9fc3dd", 0.30)  # glass rail
     else:
-        flat(ax, HX0, HX1, HY0, HY1, FF+STORY1_H, "#cfc7b6")
+        flat(ax, HX0, HX1, HY0, HY1, z1, "#cfc7b6")
 
 
 def style(ax, title):
@@ -89,6 +90,9 @@ def style(ax, title):
     ax.set_xlim(0, LOT_W); ax.set_ylim(-16, LOT_D+18); ax.set_zlim(0, 60)
     ax.set_axis_off()
     ax.set_title(title, fontsize=13, fontweight="bold", pad=2)
+    ax.text(LOT_W/2, -10, 2, "HAWTHORNE AVE", color="#444", fontsize=8, ha="center")
+    ax.text(LOT_W/2, LOT_D+14, 3, "BAY  ·  SUNSET / WEST VIEWS",
+            color="#1f6fb2", fontsize=9, fontweight="bold", ha="center")
 
 
 def render(proposed, elev, azim, fname, title):

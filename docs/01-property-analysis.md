@@ -18,6 +18,25 @@ lot**, which adds waterfront setback rules, seawall/dock considerations, and a
 firm flood mandate (Zone AE, BFE 8.0′). These materially affect the second-floor
 design — see [docs/02](docs/02-zoning-permits-miami.md) and [docs/03](docs/03-feasibility-second-floor.md).
 
+## ✅ Confirmed from the listing + photos (MLS A11896199 / luxeknows.com)
+
+| Item | Value |
+|------|-------|
+| Configuration | **3 bed + den / 3 bath**, ~2,874 sq ft (recently remodeled) |
+| Roof | **Flat / low-slope tile** — favorable for building up |
+| Style | White stucco tropical/MiMo-modern, black impact windows, column screen entry |
+| Water | **Direct open-bay access** (intracoastal/Biscayne Bay), boating, seawall |
+| Views | **Unobstructed west-facing sunset views over the bay**, ocean/skyline beyond |
+| Pool | Infinity-edge pool + travertine/wood deck at water's edge |
+| Parking | 2 spaces, **circular paver driveway** |
+| Est. value | **~$4.1M** (Zillow/Trulia, 2026); currently **leased ~$15k/mo** |
+| Neighbor | **Two-story modern home immediately to the left** (two-story precedent) |
+
+See full visual findings + design implications in [docs/07](docs/07-site-photos.md).
+**Headline:** the view is the prize — a second floor with a **west-facing bay
+terrace** is the highest-value move, and the **flat roof** makes building up
+structurally easier.
+
 ## What public records show
 
 8220 Hawthorne Ave, Miami Beach, FL 33141:

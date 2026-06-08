@@ -51,6 +51,8 @@ static PNGs. **Concept massing only — not photoreal, not for permit.** See
    and a repeatable workflow to generate your own concept renderings.
 6. **[docs/06 — Budget, Timeline & Process](docs/06-budget-timeline-process.md)** —
    ballpark costs, schedule, and the step order so nothing stalls.
+7. **[docs/07 — Site Photos & Findings](docs/07-site-photos.md)** — what the actual
+   listing photos show and how it shapes the design (build up for the bay views).
 
 ## Status checklist
 
