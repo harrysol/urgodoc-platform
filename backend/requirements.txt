@@ -1,0 +1,21 @@
+# ── Web framework ───────────────────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20          # multipart form parsing (file/dimension uploads)
+
+# ── Data / persistence ──────────────────────────────────────────────────────
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.10           # PostgreSQL driver
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# ── Async task queue ────────────────────────────────────────────────────────
+celery[redis]==5.4.0
+redis==5.2.1
+
+# ── Scraping layer ──────────────────────────────────────────────────────────
+playwright==1.49.1                # run `playwright install chromium` after pip install
+
+# ── Fashion AI APIs ─────────────────────────────────────────────────────────
+anthropic>=0.69.0                 # Vision LLM (GPT-4o-mini alternative); needs output_config support
+httpx==0.28.1                     # Tripo3D REST client + image downloads
