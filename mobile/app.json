@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "UrgoDoc Try-On",
+    "slug": "urgodoc-tryon",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "urgodoc",
+    "splash": {
+      "backgroundColor": "#0B0B12"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.urgodoc.tryon",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We use the camera to measure your body and build your custom try-on avatar."
+      }
+    },
+    "android": {
+      "package": "ai.urgodoc.tryon",
+      "permissions": ["CAMERA"]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow UrgoDoc to use the camera to measure your body for the try-on avatar."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:8000/api/v1"
+    }
+  }
+}
