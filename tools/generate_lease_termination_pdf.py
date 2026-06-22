@@ -245,8 +245,9 @@ def build_story(styles):
         [
             Paragraph("Second Installment", styles["Cell"]),
             Paragraph(
-                "Due upon successful furniture &amp; inventory inspection and the Tenants' full "
-                "surrender of the premises (net of the $1,000.00 July occupancy adjustment)",
+                "Due no later than three (3) business days following the move-out walkthrough "
+                "inspection and the Tenants' full surrender of the premises (net of the $1,000.00 "
+                "July occupancy adjustment)",
                 styles["Cell"],
             ),
             Paragraph("$14,000.00", styles["CellRight"]),
@@ -280,24 +281,40 @@ def build_story(styles):
 
     # Section 3
     story.append(
-        Paragraph("3. MANDATORY FURNITURE &amp; INVENTORY INSPECTION", styles["SectionHeading"])
+        Paragraph("3. MOVE-OUT INSPECTION &amp; DEPOSIT DEDUCTIONS", styles["SectionHeading"])
     )
     story.append(
         Paragraph(
-            "The release of the $14,000.00 second installment is strictly contingent upon a "
-            "physical move-out walkthrough inspection and the Tenants' complete surrender of the "
-            "premises. Per Section 2 of the original lease, the Landlord shall inspect the premises "
-            "to verify the condition and presence of all provided furniture, appliances, and "
-            "fixtures. The $15,000.00 first installment shall be paid upon execution of this "
-            "Agreement and is not contingent upon the inspection.",
+            "The $15,000.00 first installment shall be paid upon execution of this Agreement and is "
+            "not contingent upon the inspection. A physical move-out walkthrough inspection shall be "
+            "conducted, the results of which shall apply solely to determining documented damage "
+            "deductions from the $14,000.00 second installment and shall not affect the termination "
+            "or the mutual release set forth in Section 4. The second installment, net of the "
+            "$1,000.00 July occupancy adjustment, shall be paid to the Tenants no later than three "
+            "(3) business days following the move-out walkthrough inspection.",
             styles["Body"],
         )
     )
     story.append(
         Paragraph(
-            "The Landlord reserves all statutory rights under Florida Statute &sect; 83.49(3) to "
-            "deduct from the security deposit any documented amounts required to repair damage "
-            "beyond normal wear and tear, or to replace missing inventory item(s).",
+            "Any deduction from the second installment shall be limited to the documented cost of "
+            "repairing damage beyond normal wear and tear, or replacing missing items, itemized in "
+            "writing in accordance with Florida Statute &sect; 83.49(3). The parties acknowledge "
+            "that the original lease did not list any furniture or appliances (Section 2 was left "
+            "blank), and no inventory of furnishings shall serve as a basis for any deduction.",
+            styles["Body"],
+        )
+    )
+    story.append(
+        Paragraph(
+            "The Tenants shall not be charged, and no deduction shall be made, for any condition "
+            "existing prior to move-out or caused by the Landlord or the property's ongoing "
+            "defects, including without limitation: water intrusion and water damage; mold and any "
+            "humidity- or moisture-related damage; the open or unsealed drywall at the front "
+            "entrance; damage arising from the roof leaks and related repairs; termite, cockroach, "
+            "or other pest activity or damage; and any issues with the front window. These "
+            "conditions are the Landlord's responsibility under the lease and Florida Statute "
+            "&sect; 83.51.",
             styles["Body"],
         )
     )
@@ -306,10 +323,12 @@ def build_story(styles):
     story.append(Paragraph("4. MUTUAL RELEASE OF LIABILITY", styles["SectionHeading"]))
     story.append(
         Paragraph(
-            "Upon execution of this Agreement, successful move-out inspection, and the final "
-            "disbursement of funds described in Section 2, the Landlord and Tenants hereby release "
-            "each other from all future duties, liabilities, or claims arising under the original "
-            "lease agreement.",
+            "Upon execution of this Agreement, the Landlord and Tenants mutually release each other "
+            "from all claims, duties, and liabilities arising under the original lease, including "
+            "any early termination fee or liquidated damages under the lease's Early Termination "
+            "Fee/Liquidated Damages Addendum. The move-out inspection shall apply solely to "
+            "determining documented damage deductions from the second installment under Section 3 "
+            "and shall not affect the termination or this mutual release.",
             styles["Body"],
         )
     )
