@@ -170,8 +170,7 @@ def build_story(styles):
     )
     story.append(
         Paragraph(
-            "The parties agree that the baseline financial breakdown prior to the final move-out "
-            "inspection is structured as follows:",
+            "The parties agree that the net balance due to the Tenants is calculated as follows:",
             styles["Body"],
         )
     )
@@ -198,8 +197,8 @@ def build_story(styles):
             Paragraph("-$1,000.00", styles["CellRight"]),
         ],
         [
-            Paragraph("PRELIMINARY NET BALANCE DUE TO TENANTS", styles["CellBold"]),
-            Paragraph("Subject to Section 3 Below", styles["Cell"]),
+            Paragraph("NET BALANCE DUE TO TENANTS", styles["CellBold"]),
+            Paragraph("Payable per the schedule below", styles["Cell"]),
             Paragraph("+$29,000.00", styles["CellBoldRight"]),
         ],
     ]
@@ -221,8 +220,62 @@ def build_story(styles):
             ]
         )
     )
-    # Header is white text; override header header cell paragraphs need white text
     story.append(table)
+    story.append(Spacer(1, 10))
+
+    story.append(
+        Paragraph(
+            "The net balance of $29,000.00 shall be disbursed to the Tenants in two (2) "
+            "installments as set forth below:",
+            styles["Body"],
+        )
+    )
+
+    schedule_data = [
+        [
+            Paragraph("Installment", styles["CellBold"]),
+            Paragraph("Payment Condition / Timing", styles["CellBold"]),
+            Paragraph("Amount", styles["CellBoldRight"]),
+        ],
+        [
+            Paragraph("First Installment", styles["Cell"]),
+            Paragraph("Due upon execution (signing) of this Agreement", styles["Cell"]),
+            Paragraph("$15,000.00", styles["CellRight"]),
+        ],
+        [
+            Paragraph("Second Installment", styles["Cell"]),
+            Paragraph(
+                "Due upon successful furniture &amp; inventory inspection and the Tenants' full "
+                "surrender of the premises (net of the $1,000.00 July occupancy adjustment)",
+                styles["Cell"],
+            ),
+            Paragraph("$14,000.00", styles["CellRight"]),
+        ],
+        [
+            Paragraph("TOTAL DISBURSEMENT", styles["CellBold"]),
+            Paragraph("", styles["Cell"]),
+            Paragraph("$29,000.00", styles["CellBoldRight"]),
+        ],
+    ]
+
+    schedule = Table(schedule_data, colWidths=[1.5 * inch, 3.6 * inch, 1.4 * inch])
+    schedule.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2c3e50")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#888888")),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+                ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#eef2f5")),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -2), [colors.white, colors.HexColor("#f7f9fa")]),
+            ]
+        )
+    )
+    story.append(schedule)
     story.append(Spacer(1, 10))
 
     # Section 3
@@ -231,10 +284,12 @@ def build_story(styles):
     )
     story.append(
         Paragraph(
-            "The return of the $29,000.00 preliminary net balance is strictly contingent upon a "
-            "physical move-out walkthrough inspection. Per Section 2 of the original lease, the "
-            "Landlord shall inspect the premises to verify the condition and presence of all "
-            "provided furniture, appliances, and fixtures.",
+            "The release of the $14,000.00 second installment is strictly contingent upon a "
+            "physical move-out walkthrough inspection and the Tenants' complete surrender of the "
+            "premises. Per Section 2 of the original lease, the Landlord shall inspect the premises "
+            "to verify the condition and presence of all provided furniture, appliances, and "
+            "fixtures. The $15,000.00 first installment shall be paid upon execution of this "
+            "Agreement and is not contingent upon the inspection.",
             styles["Body"],
         )
     )
