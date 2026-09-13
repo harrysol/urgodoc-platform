@@ -1,50 +1,55 @@
-# Renders — 3D Massing Study
+# Renders
 
-Conceptual 3D massing of 8220 Hawthorne Ave with a proposed second floor, built
-from the **boundary survey** (Lot 60′×150′, canal-front, Flood AE / BFE 8.0′).
+Two generations of model live here. Use **`v2/`** — it is built from the real
+floor plan.
 
-> ⚠️ **Concept massing only — not to scale, not a permit document and not a
-> photoreal render of the actual house.** It shows volume, placement, the
-> flood-raised floor, the stepped-back second story, pool, deck and canal. For
-> photoreal images of *your* house, run a real photo through one of the AI tools
-> in [../docs/05](../docs/05-ai-3d-rendering-guide.md). For stamped drawings, you
-> need a licensed architect/engineer ([../docs/04](../docs/04-architect-shortlist.md)).
+> ⚠️ **Concept massing only — not a permit document.** The floor-plan trace is
+> scaled to the 2,874 sf public record, not measured on site. A vertical addition
+> in the Miami-Dade HVHZ must be designed and sealed by a Florida-licensed
+> architect and structural engineer ([../docs/04](../docs/04-architect-shortlist.md)).
 
-## Subfolders
+## Start here
 
-- **`plans/`** — schematic **floor plans** (ground + new second) and **elevations**
-  (front + bay). Generate with `python3 tools/floor_plans.py`. See
-  [../docs/10](../docs/10-schematic-design.md).
-- **`blender/`** — articulated **3D model** renders (Blender/Cycles): bay hero,
-  street, aerial. Generate with `python3 tools/blender_second_floor.py`.
+**[`interactive-3d-v2.html`](interactive-3d-v2.html)** — open in any browser.
+Orbit/zoom/pan, toggle the second floor and the roofs, and switch to
+**Cutaway plan** to see both floor plates stacked with the bearing walls (green)
+and the one new beam line (red). Loads three.js from a CDN, so it needs internet
+the first time.
 
-## Files (early massing study)
+## `v2/` — modelled from sheet A-1
 
 | File | What it is |
-|------|-----------|
-| `interactive-3d-model.html` | **Best one.** Open in any browser → orbit/zoom the model and click **"Toggle Second Floor"** to compare existing vs. proposed. Correct depth + lighting. |
-| `existing_street.png` | Existing one-story, viewed from Hawthorne Ave |
-| `proposed_street.png` | Proposed two-story, viewed from Hawthorne Ave |
-| `existing_aerial.png` | Existing, aerial ¾ (canal at rear) |
-| `proposed_aerial.png` | Proposed w/ second floor, aerial ¾ |
+|---|---|
+| `v2/hero_canal.png` | Proposed, from the canal — primary suite + terrace on the water |
+| `v2/street.png` | Proposed, from Hawthorne Ave — the second floor reads as set back |
+| `v2/aerial.png` | Proposed, aerial three-quarter |
+| `v2/existing_street.png` | Existing one storey, same camera — the A/B comparison |
+| `v2/existing_canal.png` | Existing, from the canal |
 
-## How to view the interactive model
+## `plans/` — schematic sheets
 
-Just open `interactive-3d-model.html` in Chrome/Safari/Edge (it loads three.js
-from a CDN, so you need internet the first time). Drag to orbit, scroll to zoom,
-right-drag to pan.
+| File | What it is |
+|---|---|
+| `plans/a1_existing_traced.png` | Ground floor traced from sheet A-1, dimensioned |
+| `plans/a1_second_floor.png` | **Proposed second floor, scheme A** |
+| `plans/a1_stacking.png` | New floor over the existing bearing walls — the load path |
+| `plans/a1_section.png` | Height stack: does two storeys fit under the cap? |
+| `plans/ground_floor.png`, `plans/second_floor.png`, `plans/elevations.png` | earlier study (pre-A-1) |
 
-## How to regenerate the static PNGs
+## Earlier massing study (superseded)
+
+`interactive-3d-model.html`, `existing_*.png`, `proposed_*.png`, `blender/`,
+`photomontage/` — built before sheet A-1 was available, from an assumed
+41' × 64' box. Kept for comparison; prefer `v2/`.
+
+## Regenerate
 
 ```bash
-pip install numpy matplotlib
-python3 tools/render_massing.py    # writes PNGs into renders/
+pip install numpy matplotlib trimesh
+python3 tools/house_data.py         # prints the room schedule + area maths
+python3 tools/floorplan_model.py    # plans + 3D renders + cad/8220_hawthorne_from_plan.glb
+python3 tools/build_viewer.py       # interactive-3d-v2.html
 ```
 
-## What the model assumes (edit in `tools/render_massing.py`)
-
-- Front setback ~20′, side setbacks ~7.5′ (verify against Miami Beach code)
-- Ground floor raised to BFE 8.0′ (flood AE)
-- Second story stepped back ~8′ from the front, rooftop terrace over the step
-- House footprint ~41′×64′ (≈ existing 2,874 sf) — refine once the architect
-  confirms partial vs. full second floor
+All three read `tools/house_data.py`, so the plans, the renders, the GLB and the
+viewer cannot drift apart — change a dimension in one place and re-run.

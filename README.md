@@ -29,12 +29,34 @@ exact zoning district, max height, setbacks and FAR with
 [Miami Beach Planning](https://www.miamibeachfl.gov/city-hall/planning/) — see
 [docs/01](docs/01-property-analysis.md).*
 
-## 3D massing renders
+## 3D model + second-floor design
 
-A concept 3D massing (built from the survey) lives in [`renders/`](renders/):
-open **[`renders/interactive-3d-model.html`](renders/interactive-3d-model.html)**
-in a browser to orbit the model and toggle the second floor on/off, or see the
-static PNGs. **Concept massing only — not photoreal, not for permit.** See
+The model is now built from the architect's sheet **A-1 "EXISTING UNIT FLOOR
+PLAN"**, so it carries the house's real rooms instead of an assumed box.
+
+- Open **[`renders/interactive-3d-v2.html`](renders/interactive-3d-v2.html)** to
+  orbit the model, toggle the second floor, and switch to *Cutaway plan* to see
+  both floor plates with the bearing walls and the new beam line.
+- Static views in [`renders/v2/`](renders/v2/), schematic sheets in
+  [`renders/plans/`](renders/plans/).
+- The design and the reasoning behind it:
+  **[docs/16 — Second-Floor Design](docs/16-second-floor-design.md)**.
+
+**Scheme A, "canal house"** — 1,632 sf conditioned + 358 sf terrace: primary
+suite and terrace on the canal, two more bedrooms toward the street, the
+street-facing corner cut away so the house still reads as one storey from
+Hawthorne Ave. The stair is a 17-riser straight run against an existing wall in
+the living room. Three of the four second-floor edges land directly on existing
+CBS walls; the fourth needs one beam with a 19'-1" maximum clear span.
+
+**The catch is flood, not structure.** At +23.9' to the top of the parapet the
+addition fits under a 24' cap — *but only if the existing slab stays where it
+is*. If the job is priced at or above 50% of the structure's value it becomes a
+"substantial improvement", the slab has to come up to BFE 8.0', and the stack
+grows to +27.4' — over the cap. Confirm the district's real height limit and
+the 50% valuation **before** paying for schematic design.
+
+**Concept massing only — not photoreal, not for permit.** See
 [renders/README](renders/README.md).
 
 ## How to use this repo
@@ -53,13 +75,21 @@ static PNGs. **Concept massing only — not photoreal, not for permit.** See
    ballpark costs, schedule, and the step order so nothing stalls.
 7. **[docs/07 — Site Photos & Findings](docs/07-site-photos.md)** — what the actual
    listing photos show and how it shapes the design (build up for the bay views).
+8. **[docs/16 — Second-Floor Design](docs/16-second-floor-design.md)** — **the
+   design**, drawn on the traced A-1 floor plan: room program, load path, stair,
+   and the flood/height go-no-go.
 
 ## Status checklist
 
 - [x] Pull official property record + survey + flood zone *(survey reviewed: Lot 60×150, canal-front, Flood AE / BFE 8.0)*
 - [ ] Confirm zoning district, max height, setbacks, FAR/lot coverage *(incl. waterfront setback)*
 - [ ] Resolve south-line paver/fence encroachment noted on survey
-- [x] Generate concept massing *(see `renders/`)* — next: photoreal AI render from a real photo
+- [x] Generate concept massing *(see `renders/`)*
+- [x] Trace the real floor plan from sheet A-1 and rebuild the model on it *(docs/16)*
+- [x] Design the second floor — scheme A, 1,632 sf *(docs/16)*
+- [ ] **Tape-measure the house** to confirm or rescale the A-1 trace
+- [ ] **Get the 50%-of-value number** — it decides whether the slab must come up to BFE
+- [ ] Confirm the house is one legal single-family dwelling (sheet A-1 says "unit A")
 - [ ] Shortlist 3 architects, request fee proposals
 - [ ] Structural feasibility review (can foundation/walls take a 2nd story?)
 - [ ] Select architect → schematic design → permit set (signed/sealed)

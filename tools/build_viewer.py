@@ -1,0 +1,431 @@
+#!/usr/bin/env python3
+"""
+Emit renders/interactive-3d-v2.html — a self-contained three.js viewer of the
+traced ground floor + the proposed second floor. Data comes from house_data.py
+so the viewer can never drift from the plans and the GLB.
+
+    python3 tools/build_viewer.py
+"""
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import house_data as H
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(ROOT, "renders", "interactive-3d-v2.html")
+
+SOLID_2 = [(0.0, 13.0), (16.0, 13.0), (16.0, 0.0), (48.7, 0.0), (48.7, 28.0),
+           (38.0, 28.0), (38.0, 42.0), (0.0, 42.0)]
+STREET_END = [(0.0, 42.0), (48.7, 42.0), (48.7, 72.1), (36.6, 72.1), (36.6, 53.7),
+              (28.7, 53.7), (28.7, 49.4), (17.5, 49.4), (17.5, 58.3), (0.0, 58.3)]
+
+DATA = dict(
+    W=H.W, D=H.D, lotW=H.LOT_W, lotD=H.LOT_D,
+    ff1=H.FF1, eave1=H.EAVE1, ff2=H.FF2, plate2=H.PLATE2,
+    roof=H.ROOF, parapet=H.PARAPET, bfe=H.BFE,
+    env1=H.ENVELOPE_1, env2=H.ENVELOPE_2, solid2=SOLID_2, streetEnd=STREET_END,
+    rooms1=[dict(n=n, x0=a, x1=b, y0=c, y1=d, k="room") for n, a, b, c, d in H.ROOMS_1],
+    rooms2=[dict(n=n, x0=a, x1=b, y0=c, y1=d, k=k) for n, a, b, c, d, k in H.ROOMS_2],
+    walls1=[dict(x0=a, y0=b, x1=c, y1=d, bearing=e) for a, b, c, d, e in H.WALLS_1],
+    open1=[dict(w=w, a0=a, a1=b, s=s, h=h) for w, a, b, s, h in H.OPENINGS_1],
+    open2=[dict(w=w, a0=a, a1=b, s=s, h=h) for w, a, b, s, h in H.OPENINGS_2],
+    stair=H.STAIR, frontBeamY=H.FRONT_BEAM_Y,
+    area1=round(H.AREA_1), area2=round(H.AREA_2_COND), terr2=round(H.AREA_2_TERRACE),
+)
+
+HTML = """<title>8220 Hawthorne — Second Floor</title>
+<style>
+  :root{
+    --bg:#eef2f5; --panel:#ffffff; --ink:#15181d; --muted:#5f6772; --line:#dde3e9;
+    --accent:#2e6fb7; --new:#c47b1c; --ok:#2e8b45;
+  }
+  :root:not([data-theme="light"]){ }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#11141a; --panel:#191d25; --ink:#e9edf2; --muted:#98a2ae; --line:#2a303a;
+    --accent:#6fa8e8; --new:#e8b45c; --ok:#5fc47f; } }
+  :root[data-theme="dark"]{
+    --bg:#11141a; --panel:#191d25; --ink:#e9edf2; --muted:#98a2ae; --line:#2a303a;
+    --accent:#6fa8e8; --new:#e8b45c; --ok:#5fc47f; }
+  body{background:var(--bg);color:var(--ink);font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  #wrap{position:relative;width:100%;height:100vh;overflow:hidden}
+  canvas{display:block;touch-action:none}
+  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.10)}
+  #hud{top:16px;left:16px;padding:14px 16px;max-width:min(330px,calc(100vw - 32px))}
+  #hud h1{margin:0 0 2px;font-size:15px;letter-spacing:-.01em}
+  #hud .sub{color:var(--muted);font-size:11.5px;margin-bottom:11px}
+  .row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  button{font:inherit;font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--line);background:transparent;color:var(--ink);transition:.12s}
+  button:hover{border-color:var(--accent)}
+  button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .stats{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;
+    font-size:11.5px;color:var(--muted)}
+  .stats b{color:var(--ink);font-weight:600}
+  .stats div{display:flex;justify-content:space-between;gap:12px;padding:1.5px 0}
+  #note{bottom:16px;left:16px;right:16px;padding:9px 13px;font-size:11px;color:var(--muted);
+    max-width:760px}
+  #note b{color:var(--new)}
+  #tip{position:absolute;pointer-events:none;padding:5px 9px;border-radius:7px;
+    background:var(--panel);border:1px solid var(--line);font-size:11.5px;
+    display:none;box-shadow:0 4px 14px rgba(0,0,0,.14);white-space:nowrap}
+  @media (max-width:640px){ #hud{position:static;margin:12px;max-width:none}
+    #wrap{height:auto} canvas{height:62vh !important} #note{position:static;margin:12px} }
+</style>
+<div id="wrap">
+  <div id="hud" class="panel">
+    <h1>8220 Hawthorne Ave — second floor</h1>
+    <div class="sub">Ground floor traced from sheet A-1. Second floor = proposed scheme A.</div>
+    <div class="row">
+      <button id="b2" class="on">Second floor</button>
+      <button id="br" class="on">Roofs</button>
+      <button id="bc">Cutaway plan</button>
+    </div>
+    <div class="row">
+      <button data-v="canal">Canal</button>
+      <button data-v="street">Street</button>
+      <button data-v="aerial">Aerial</button>
+      <button data-v="side">Side</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div id="tip"></div>
+  <div id="note" class="panel">
+    <b>Concept massing — not a permit document.</b> The floor-plan trace is scaled to the
+    2,874 sf public record; verify every dimension on site. A vertical addition in the
+    Miami-Dade HVHZ must be designed and sealed by a Florida-licensed architect and
+    structural engineer.
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const D = __DATA__;
+const wrap = document.getElementById('wrap');
+const dark = matchMedia('(prefers-color-scheme: dark)').matches
+             && document.documentElement.dataset.theme !== 'light'
+             || document.documentElement.dataset.theme === 'dark';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(dark ? 0x0e1116 : 0xdfeaf2);
+scene.fog = new THREE.Fog(scene.background, 220, 520);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+wrap.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.5, 2000);
+
+// ---- lights
+scene.add(new THREE.HemisphereLight(dark?0x24303c:0xc3d9e8, dark?0x0c0f13:0x6a7358, dark?0.5:0.72));
+const sun = new THREE.DirectionalLight(0xfff4e6, dark?0.8:1.05);
+sun.position.set(-70, -40, 120); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+const sc = sun.shadow.camera;
+sc.left=-130; sc.right=130; sc.top=130; sc.bottom=-130; sc.near=1; sc.far=460;
+scene.add(sun);
+
+// ---- materials
+const M = (c,o={}) => new THREE.MeshStandardMaterial(Object.assign({color:c, roughness:.85},o));
+const mat = {
+  stucco:  M(0xeceae4, {roughness:.92}),
+  stucco2: M(0xdedbd3, {roughness:.92}),
+  newmass: M(0xf7f3ea, {roughness:.9}),
+  trim:    M(0x23262c, {roughness:.45, metalness:.35}),
+  glass:   new THREE.MeshStandardMaterial({color:0x2c4457, roughness:.08, metalness:.2,
+             transparent:true, opacity:.72}),
+  rail:    new THREE.MeshStandardMaterial({color:0x9dc3d6, roughness:.1, metalness:.1,
+             transparent:true, opacity:.42}),
+  roof:    M(0xcfcdc6),
+  deck:    M(0xa88a66, {roughness:.95}),
+  grass:   M(0x8ba36d, {roughness:1}),
+  water:   new THREE.MeshStandardMaterial({color:0x2f7392, roughness:.12, metalness:.25}),
+  pool:    new THREE.MeshStandardMaterial({color:0x36a3cc, roughness:.1, metalness:.2}),
+  road:    M(0x8e8e91),
+  pave:    M(0xb2afaa),
+  hedge:   M(0x55703f, {roughness:1}),
+  leaf:    M(0x527239, {roughness:1}),
+  trunk:   M(0x6b5942, {roughness:1}),
+  plate:   M(0xd5d2ca),
+  part:    M(0xc8c4bb),
+  bear:    M(0x2e8b45),
+  beam:    M(0xc0392b, {roughness:.5, metalness:.3}),
+  stair:   M(0xcfc6b6)
+};
+
+// ---- house sits inside the lot; plan Y runs to the street, world Y to the canal
+const OX = 5.65, OY = 20.0;
+const hx = x => OX + x, hy = y => OY + (D.D - y);
+
+const G = {site:new THREE.Group(), f1:new THREE.Group(), r1:new THREE.Group(),
+           f2:new THREE.Group(), r2:new THREE.Group(), cut:new THREE.Group()};
+Object.values(G).forEach(g => scene.add(g));
+G.cut.visible = false;
+
+function box(g, x0,x1, y0,y1, z0,z1, m, name){
+  const w=Math.abs(x1-x0), d=Math.abs(y1-y0), h=Math.abs(z1-z0);
+  if(w<1e-4||d<1e-4||h<1e-4) return null;
+  const o = new THREE.Mesh(new THREE.BoxGeometry(w,d,h), m);
+  o.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  o.castShadow = o.receiveShadow = true;
+  if(name) o.userData.label = name;
+  g.add(o); return o;
+}
+function prism(g, poly, z0, z1, m, name){
+  const sh = new THREE.Shape(poly.map(p => new THREE.Vector2(hx(p[0]), hy(p[1]))));
+  const geo = new THREE.ExtrudeGeometry(sh, {depth:z1-z0, bevelEnabled:false});
+  const o = new THREE.Mesh(geo, m);
+  o.position.z = z0; o.castShadow = o.receiveShadow = true;
+  if(name) o.userData.label = name;
+  g.add(o); return o;
+}
+function plane(g, x0,x1, y0,y1, z, m){
+  const o = new THREE.Mesh(new THREE.PlaneGeometry(x1-x0, y1-y0), m);
+  o.position.set((x0+x1)/2,(y0+y1)/2,z); o.receiveShadow = true; g.add(o); return o;
+}
+
+// ---------- site
+plane(G.site, -18, D.lotW+18, -8, D.lotD, -0.02, mat.grass);
+plane(G.site, -60, D.lotW+60, D.lotD, D.lotD+70, 0.05, mat.water);
+box(G.site, -18, D.lotW+18, D.lotD-1.4, D.lotD, -0.6, 1.0, mat.pave);      // seawall
+plane(G.site, -18, D.lotW+18, -34, -8, 0.0, mat.road);
+plane(G.site, 6, 34, -8, 17, 0.03, mat.pave);                              // driveway
+box(G.site, 13, 41, 110, 132, 0, 0.55, mat.deck);
+box(G.site, 18, 36, 114, 128, 0, 0.72, mat.pool);
+[[4,104],[54,100],[6,132],[52,134],[2,40],[57,46]].forEach(([px,py])=>{
+  box(G.site, px-.5,px+.5, py-.5,py+.5, 0, 9, mat.trunk);
+  [5.5,4.2,2.8].forEach((r,k)=> box(G.site, px-r,px+r, py-r,py+r, 9+k*2.2, 11+k*2.2, mat.leaf));
+});
+[0, D.lotW].forEach(x => box(G.site, x-1.2, x+1.2, 12, D.lotD-9, 0, 4.5, mat.hedge));
+
+// ---------- ground floor
+prism(G.f1, D.env1, 0, D.ff1, mat.stucco2);
+prism(G.f1, D.env1, D.ff1, D.eave1, mat.stucco, 'Existing ground floor');
+// entry colonnade
+for(let i=0;i<5;i++){ const px = hx(2+i*8);
+  box(G.f1, px-.55,px+.55, hy(72.1)-6.6, hy(72.1)-5.5, 0, D.eave1-0.4, mat.stucco2); }
+box(G.f1, hx(0), hx(36.6), hy(72.1)-7, hy(72.1), D.eave1-0.4, D.eave1+0.5, mat.roof);
+box(G.f1, hx(0), hx(36.6), hy(72.1)-7, hy(72.1), -0.01, 0.35, mat.pave);
+
+// ---------- glazing
+function glaze(g, o, base){
+  const t = 0.14, f = 0.28;
+  if(o.w === 'N'){                                   // plan-rear = canal = max world Y
+    const y = hy(0);
+    box(g, hx(o.a0)-f, hx(o.a1)+f, y-t*1.6, y+0.10, base+o.s-f, base+o.h+f, mat.trim);
+    box(g, hx(o.a0), hx(o.a1), y-t, y+0.16, base+o.s, base+o.h, mat.glass);
+  } else if(o.w === 'W' || o.w === 'E'){
+    const x = o.w === 'W' ? hx(0) : hx(D.W);
+    const s = o.w === 'W' ? -1 : 1;
+    box(g, x+s*0.10, x-s*t*1.6, hy(o.a1)-f, hy(o.a0)+f, base+o.s-f, base+o.h+f, mat.trim);
+    box(g, x+s*0.16, x-s*t,     hy(o.a1),   hy(o.a0),   base+o.s,   base+o.h,   mat.glass);
+  } else {                                           // street-facing walls
+    const y = hy({S1:58.3, F:53.7, S2:72.1, S:42.0}[o.w]);
+    box(g, hx(o.a0)-f, hx(o.a1)+f, y-0.10, y+t*1.6, base+o.s-f, base+o.h+f, mat.trim);
+    box(g, hx(o.a0), hx(o.a1), y-0.16, y+t, base+o.s, base+o.h, mat.glass);
+  }
+}
+D.open1.forEach(o => glaze(G.f1, o, D.ff1));
+
+// ---------- roof over the street end (stays one storey)
+prism(G.r1, D.streetEnd, D.eave1, D.eave1+1.1, mat.roof);
+prism(G.r1, D.streetEnd, D.eave1+1.1, D.eave1+2.9, mat.stucco2);
+
+// ---------- second floor
+prism(G.f2, D.env2, D.eave1, D.ff2, mat.plate);
+prism(G.f2, D.solid2, D.ff2, D.ff2 + D.plate2, mat.newmass, 'Proposed second floor');
+D.open2.forEach(o => glaze(G.f2, o, D.ff2));
+// terraces
+[[0,16,0,13],[38,48.7,28,42]].forEach(([a,b,c,d])=>{
+  box(G.f2, hx(a), hx(b), hy(d), hy(c), D.ff2, D.ff2+0.25, mat.deck);
+  const pts = [[a,c],[b,c],[b,d],[a,d]];
+  for(let i=0;i<4;i++){
+    const p=pts[i], q=pts[(i+1)%4];
+    box(G.f2, Math.min(hx(p[0]),hx(q[0]))-0.1, Math.max(hx(p[0]),hx(q[0]))+0.1,
+              Math.min(hy(p[1]),hy(q[1]))-0.1, Math.max(hy(p[1]),hy(q[1]))+0.1,
+              D.ff2+0.25, D.ff2+3.6, mat.rail);
+  }
+});
+// deep shade eyebrow over the canal glass
+box(G.f2, hx(15), hx(39), hy(0)-0.3, hy(0)+3.4, D.ff2+D.plate2-0.9, D.ff2+D.plate2, mat.stucco);
+prism(G.r2, D.solid2, D.ff2+D.plate2, D.roof, mat.roof);
+prism(G.r2, D.solid2, D.roof, D.parapet, mat.stucco2);
+
+// ---------- cutaway: floor plates, partitions, room labels, new beam line
+function sprite(text, x, y, z, color, size){
+  const c = document.createElement('canvas'), s = 4;
+  const ctx = c.getContext('2d');
+  ctx.font = `600 ${13*s}px ui-sans-serif,system-ui,sans-serif`;
+  c.width = Math.ceil(ctx.measureText(text).width) + 16*s; c.height = 22*s;
+  const g2 = c.getContext('2d');
+  g2.font = `600 ${13*s}px ui-sans-serif,system-ui,sans-serif`;
+  g2.fillStyle = 'rgba(255,255,255,.88)';
+  g2.fillRect(0,0,c.width,c.height);
+  g2.fillStyle = color; g2.textBaseline='middle'; g2.textAlign='center';
+  g2.fillText(text, c.width/2, c.height/2);
+  const t = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:t, depthTest:false}));
+  sp.scale.set(size * c.width/c.height, size, 1); sp.position.set(x,y,z);
+  G.cut.add(sp);
+}
+D.rooms1.forEach(r=>{
+  box(G.cut, hx(r.x0)+.2, hx(r.x1)-.2, hy(r.y1)+.2, hy(r.y0)-.2, D.ff1, D.ff1+.12, mat.plate);
+  sprite(r.n, hx((r.x0+r.x1)/2), hy((r.y0+r.y1)/2), D.ff1+1.2, '#6b727b', 2.1);
+});
+D.walls1.forEach(w=>{
+  const t = w.bearing ? 0.55 : 0.3;
+  box(G.cut, Math.min(hx(w.x0),hx(w.x1))-t, Math.max(hx(w.x0),hx(w.x1))+t,
+             Math.min(hy(w.y0),hy(w.y1))-t, Math.max(hy(w.y0),hy(w.y1))+t,
+             D.ff1, D.ff1 + (w.bearing?3.4:2.2), w.bearing?mat.bear:mat.part);
+});
+D.rooms2.forEach(r=>{
+  box(G.cut, hx(r.x0)+.2, hx(r.x1)-.2, hy(r.y1)+.2, hy(r.y0)-.2, D.ff2, D.ff2+.12,
+      r.k==='terrace'?mat.deck:mat.plate);
+  sprite(r.n, hx((r.x0+r.x1)/2), hy((r.y0+r.y1)/2), D.ff2+1.4,
+         r.k==='terrace'?'#3f6b2e':'#15181d', 2.5);
+});
+box(G.cut, hx(0), hx(D.W), hy(D.frontBeamY)-0.7, hy(D.frontBeamY)+0.7, D.ff2-1.6, D.ff2, mat.beam);
+// stair treads
+(function(){ const s=D.stair, n=s.risers-1;
+  for(let i=0;i<n;i++){
+    const y0 = s.y_bottom - (s.y_bottom-s.y_top)*i/n, y1 = y0 - (s.y_bottom-s.y_top)/n;
+    const z = D.ff1 + (D.ff2-D.ff1)*(i+1)/s.risers;
+    box(G.cut, hx(s.x0), hx(s.x1), hy(y0), hy(y1), z-0.35, z, mat.stair);
+  }})();
+
+// ---------- orbit controls (hand-rolled: no extra CDN file to fail on)
+const target = new THREE.Vector3(hx(24), hy(30), 8);
+let radius = 155, theta = -Math.PI/2 + 0.35, phi = 1.10;
+function place(){
+  camera.position.set(
+    target.x + radius*Math.sin(phi)*Math.cos(theta),
+    target.y + radius*Math.sin(phi)*Math.sin(theta),
+    target.z + radius*Math.cos(phi));
+  camera.up.set(0,0,1); camera.lookAt(target);
+}
+const el = renderer.domElement;
+let drag = null;
+el.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY, b:e.button};
+  el.setPointerCapture(e.pointerId); });
+el.addEventListener('pointerup',  e => { drag = null; });
+el.addEventListener('pointermove', e => {
+  if(!drag){ hover(e); return; }
+  const dx = e.clientX-drag.x, dy = e.clientY-drag.y;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if(drag.b === 2 || e.shiftKey){
+    const r = new THREE.Vector3().setFromMatrixColumn(camera.matrix,0);
+    const u = new THREE.Vector3().setFromMatrixColumn(camera.matrix,1);
+    target.addScaledVector(r, -dx*radius*0.0016).addScaledVector(u, dy*radius*0.0016);
+  } else {
+    theta -= dx*0.006;
+    phi = Math.max(0.12, Math.min(1.52, phi - dy*0.006));
+  }
+  place();
+});
+el.addEventListener('contextmenu', e => e.preventDefault());
+el.addEventListener('wheel', e => {
+  e.preventDefault();
+  radius = Math.max(38, Math.min(430, radius * (1 + Math.sign(e.deltaY)*0.10)));
+  place();
+}, {passive:false});
+
+// pinch to zoom
+let pinch = 0;
+el.addEventListener('touchmove', e => {
+  if(e.touches.length !== 2) return;
+  const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
+                       e.touches[0].clientY-e.touches[1].clientY);
+  if(pinch) radius = Math.max(38, Math.min(430, radius * pinch/d));
+  pinch = d; place();
+}, {passive:true});
+el.addEventListener('touchend', () => pinch = 0);
+
+// ---------- hover tooltip
+const ray = new THREE.Raycaster(), pt = new THREE.Vector2(), tip = document.getElementById('tip');
+function hover(e){
+  const r = el.getBoundingClientRect();
+  pt.x = ((e.clientX-r.left)/r.width)*2-1; pt.y = -((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(pt, camera);
+  const hit = ray.intersectObjects([...G.f1.children, ...G.f2.children], false)
+                 .find(h => h.object.userData.label);
+  if(hit){ tip.textContent = hit.object.userData.label; tip.style.display='block';
+           tip.style.left = (e.clientX-r.left+14)+'px'; tip.style.top = (e.clientY-r.top+14)+'px'; }
+  else tip.style.display = 'none';
+}
+el.addEventListener('pointerleave', () => tip.style.display='none');
+
+// ---------- views
+const VIEWS = {
+  canal:  {t:[hx(24), hy(18), 9],  r:118, th: Math.PI/2 - 0.30, ph:1.20},
+  street: {t:[hx(24), hy(58), 8],  r:118, th:-Math.PI/2 + 0.42, ph:1.22},
+  aerial: {t:[hx(24), hy(36), 4],  r:185, th:-Math.PI/2 + 0.75, ph:0.72},
+  side:   {t:[hx(24), hy(34), 8],  r:140, th: Math.PI + 0.05,   ph:1.32}
+};
+document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => {
+  const v = VIEWS[b.dataset.v];
+  target.set(v.t[0], v.t[1], v.t[2]); radius = v.r; theta = v.th; phi = v.ph; place();
+});
+
+// ---------- toggles
+const b2 = document.getElementById('b2'), br = document.getElementById('br'),
+      bc = document.getElementById('bc');
+let show2 = true, showRoof = true, cut = false;
+function sync(){
+  G.f2.visible = show2 && !cut;
+  G.r2.visible = show2 && showRoof && !cut;
+  G.r1.visible = showRoof && !cut;
+  G.f1.visible = !cut;
+  G.cut.visible = cut;
+  G.cut.children.forEach(o => {
+    const isF2 = o.position.z > D.ff2 - 2.2;
+    if(isF2) o.visible = show2;
+  });
+  b2.classList.toggle('on', show2);
+  br.classList.toggle('on', showRoof);
+  bc.classList.toggle('on', cut);
+  br.disabled = cut;
+  stats();
+}
+b2.onclick = () => { show2 = !show2; sync(); };
+br.onclick = () => { showRoof = !showRoof; sync(); };
+let cutSeen = false;
+bc.onclick = () => {
+  cut = !cut;
+  if(cut && !cutSeen){ cutSeen = true;
+    target.set(hx(24), hy(30), 6); radius = 150; theta = -Math.PI/2 + 0.55; phi = 0.42; place(); }
+  sync();
+};
+
+function stats(){
+  const tot = D.area1 + (show2 ? D.area2 : 0);
+  const rows = [
+    ['Existing ground floor', D.area1.toLocaleString()+' sf'],
+    ['Proposed second floor', show2 ? D.area2.toLocaleString()+' sf' : '—'],
+    ['New terraces',          show2 ? D.terr2.toLocaleString()+' sf' : '—'],
+    ['Total conditioned',     '<b>'+tot.toLocaleString()+' sf</b>'],
+    ['FAR on 9,000 sf lot',   '<b>'+(tot/9000).toFixed(2)+'</b>'],
+    ['Top of parapet',        show2 ? '<b>'+D.parapet.toFixed(1)+"' above grade</b>"
+                                    : (D.eave1+2.9).toFixed(1)+"' above grade"]
+  ];
+  document.getElementById('stats').innerHTML =
+    rows.map(r => `<div><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+}
+
+function resize(){
+  const w = wrap.clientWidth, h = wrap.clientHeight || Math.round(innerHeight*0.62);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(w, h, false);
+  el.style.width = w+'px'; el.style.height = h+'px';
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize(); place(); sync();
+(function loop(){ requestAnimationFrame(loop); renderer.render(scene, camera); })();
+</script>
+"""
+
+if __name__ == "__main__":
+    html = HTML.replace("__DATA__", json.dumps(DATA))
+    # stray placeholder guard
+    assert "__DATA__" not in html
+    with open(OUT, "w") as f:
+        f.write(html)
+    print("wrote", os.path.relpath(OUT, ROOT), f"({len(html)/1024:.0f} KB)")
