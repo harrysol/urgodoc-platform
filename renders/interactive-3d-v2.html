@@ -1,77 +1,151 @@
-<title>8220 Hawthorne — Second Floor</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>8220 Hawthorne Second Floor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
+  /* Palette read off the drawing set itself: drafting paper, blue-black ink,
+     and the two colours the plans already use — green for what exists and can
+     carry load, oxide red for new work. */
   :root{
-    --bg:#eef2f5; --panel:#ffffff; --ink:#15181d; --muted:#5f6772; --line:#dde3e9;
-    --accent:#2e6fb7; --new:#c47b1c; --ok:#2e8b45;
+    --paper:#eef0ec; --sheet:#fbfbf9; --ink:#191f26; --ink-2:#5b6670;
+    --rule:#d3d8d3; --rule-hard:#aab2ab;
+    --existing:#2e7d46; --new:#b8442e; --datum:#2f6ea8;
+    --shadow:0 1px 2px rgba(25,31,38,.06), 0 10px 30px rgba(25,31,38,.10);
   }
-  :root:not([data-theme="light"]){ }
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-    --bg:#11141a; --panel:#191d25; --ink:#e9edf2; --muted:#98a2ae; --line:#2a303a;
-    --accent:#6fa8e8; --new:#e8b45c; --ok:#5fc47f; } }
+    --paper:#0f1317; --sheet:#171c22; --ink:#e7ebe6; --ink-2:#9aa5ad;
+    --rule:#2b333a; --rule-hard:#3c454d;
+    --existing:#5fc47f; --new:#e08663; --datum:#79b0e4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.45);
+  }}
   :root[data-theme="dark"]{
-    --bg:#11141a; --panel:#191d25; --ink:#e9edf2; --muted:#98a2ae; --line:#2a303a;
-    --accent:#6fa8e8; --new:#e8b45c; --ok:#5fc47f; }
-  body{background:var(--bg);color:var(--ink);font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    --paper:#0f1317; --sheet:#171c22; --ink:#e7ebe6; --ink-2:#9aa5ad;
+    --rule:#2b333a; --rule-hard:#3c454d;
+    --existing:#5fc47f; --new:#e08663; --datum:#79b0e4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);
+    font:15px/1.55 "IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;}
   #wrap{position:relative;width:100%;height:100vh;overflow:hidden}
   canvas{display:block;touch-action:none}
-  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);
-    border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.10)}
-  #hud{top:16px;left:16px;padding:14px 16px;max-width:min(330px,calc(100vw - 32px))}
-  #hud h1{margin:0 0 2px;font-size:15px;letter-spacing:-.01em}
-  #hud .sub{color:var(--muted);font-size:11.5px;margin-bottom:11px}
-  .row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-  button{font:inherit;font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;
-    border:1px solid var(--line);background:transparent;color:var(--ink);transition:.12s}
-  button:hover{border-color:var(--accent)}
-  button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-  .stats{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;
-    font-size:11.5px;color:var(--muted)}
-  .stats b{color:var(--ink);font-weight:600}
-  .stats div{display:flex;justify-content:space-between;gap:12px;padding:1.5px 0}
-  #note{bottom:16px;left:16px;right:16px;padding:9px 13px;font-size:11px;color:var(--muted);
-    max-width:760px}
-  #note b{color:var(--new)}
-  #tip{position:absolute;pointer-events:none;padding:5px 9px;border-radius:7px;
-    background:var(--panel);border:1px solid var(--line);font-size:11.5px;
-    display:none;box-shadow:0 4px 14px rgba(0,0,0,.14);white-space:nowrap}
-  @media (max-width:640px){ #hud{position:static;margin:12px;max-width:none}
-    #wrap{height:auto} canvas{height:62vh !important} #note{position:static;margin:12px} }
+
+  /* The HUD is a drawing-sheet title block, not a dashboard card. */
+  #block{position:absolute;top:18px;left:18px;width:312px;max-width:calc(100vw - 36px);
+    background:var(--sheet);border:1px solid var(--rule-hard);box-shadow:var(--shadow)}
+  #block > section{border-top:1px solid var(--rule);padding:11px 15px 13px}
+  #block > section:first-child{border-top:0}
+  .eyebrow{font-family:"Archivo",sans-serif;font-weight:600;font-size:9.5px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);
+    display:flex;justify-content:space-between;gap:10px}
+  h1{margin:7px 0 1px;font-family:"Archivo",sans-serif;font-weight:700;
+    font-size:19px;line-height:1.15;letter-spacing:-.012em;text-wrap:balance}
+  .where{font-size:12px;color:var(--ink-2);margin:0}
+  .set{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  button{font-family:"Archivo",sans-serif;font-weight:600;font-size:10.5px;
+    letter-spacing:.055em;text-transform:uppercase;padding:6px 9px;cursor:pointer;
+    border:1px solid var(--rule-hard);background:transparent;color:var(--ink);
+    border-radius:0;transition:background .12s,color .12s,border-color .12s}
+  button:hover:not(:disabled){border-color:var(--ink);}
+  button:focus-visible{outline:2px solid var(--datum);outline-offset:2px}
+  button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);
+    color:var(--sheet)}
+  button:disabled{opacity:.34;cursor:default}
+
+  dl{margin:6px 0 0;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    font-variant-numeric:tabular-nums}
+  dl > div{display:flex;justify-content:space-between;gap:14px;padding:2.5px 0;
+    border-bottom:1px dotted var(--rule)}
+  dl > div:last-child{border-bottom:0}
+  dt{color:var(--ink-2);font-family:"IBM Plex Sans",sans-serif;font-size:11.5px}
+  dd{margin:0;white-space:nowrap}
+  dd.key{font-weight:600}
+
+  #legend{display:none}
+  #legend.on{display:block}
+  #legend ul{list-style:none;margin:7px 0 0;padding:0;display:grid;gap:5px;font-size:11.5px}
+  #legend li{display:flex;align-items:center;gap:8px;color:var(--ink-2)}
+  #legend i{width:17px;height:4px;flex:none;display:block}
+
+  #note{position:absolute;left:18px;right:18px;bottom:18px;max-width:660px;
+    background:var(--sheet);border:1px solid var(--rule-hard);box-shadow:var(--shadow);
+    padding:9px 14px;font-size:11.5px;line-height:1.5;color:var(--ink-2)}
+  #note strong{color:var(--new);font-weight:600}
+  #tip{position:absolute;pointer-events:none;padding:4px 8px;background:var(--sheet);
+    border:1px solid var(--rule-hard);font-family:"Archivo",sans-serif;font-size:10.5px;
+    letter-spacing:.05em;text-transform:uppercase;display:none;white-space:nowrap;
+    box-shadow:var(--shadow);z-index:4}
+  #hint{position:absolute;right:18px;top:18px;font-family:"Archivo",sans-serif;
+    font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);
+    text-align:right;line-height:1.9;pointer-events:none}
+  @media (max-width:760px){
+    #wrap{height:auto;overflow:visible}
+    #block,#note{position:static;width:auto;max-width:none;margin:14px}
+    #hint{display:none}
+    canvas{height:58vh !important}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 <div id="wrap">
-  <div id="hud" class="panel">
-    <h1>8220 Hawthorne Ave — second floor</h1>
-    <div class="sub">Ground floor traced from sheet A-1. Second floor = proposed scheme A.</div>
-    <div class="row">
-      <button id="b2" class="on">Second floor</button>
-      <button id="br" class="on">Roofs</button>
-      <button id="bc">Cutaway plan</button>
-    </div>
-    <div class="row">
-      <button data-v="canal">Canal</button>
-      <button data-v="street">Street</button>
-      <button data-v="aerial">Aerial</button>
-      <button data-v="side">Side</button>
-    </div>
-    <div class="stats" id="stats"></div>
+  <div id="block">
+    <section>
+      <div class="eyebrow"><span>Concept massing</span><span>Sheet A-1 trace</span></div>
+      <h1>Second floor over<br>8220 Hawthorne Ave</h1>
+      <p class="where">Miami Beach FL 33141 &middot; canal-front &middot; scheme A</p>
+    </section>
+    <section>
+      <div class="eyebrow"><span>Layers</span></div>
+      <div class="set">
+        <button id="b2" aria-pressed="true">Second floor</button>
+        <button id="br" aria-pressed="true">Roofs</button>
+        <button id="bc" aria-pressed="false">Cutaway</button>
+      </div>
+    </section>
+    <section>
+      <div class="eyebrow"><span>Views</span></div>
+      <div class="set">
+        <button data-v="canal">Canal</button>
+        <button data-v="street">Street</button>
+        <button data-v="aerial">Aerial</button>
+        <button data-v="side">Side</button>
+      </div>
+    </section>
+    <section>
+      <div class="eyebrow"><span>Schedule</span><span id="unit">sq ft</span></div>
+      <dl id="stats"></dl>
+    </section>
+    <section id="legend">
+      <div class="eyebrow"><span>Cutaway key</span></div>
+      <ul>
+        <li><i style="background:var(--existing)"></i>Existing CBS wall that can carry load</li>
+        <li><i style="background:var(--new)"></i>New beam line &mdash; 19'-1" max clear span</li>
+        <li><i style="background:var(--rule-hard)"></i>Existing partition, non-bearing</li>
+      </ul>
+    </section>
   </div>
+  <div id="hint">drag &nbsp;orbit<br>scroll &nbsp;zoom<br>shift-drag &nbsp;pan</div>
   <div id="tip"></div>
-  <div id="note" class="panel">
-    <b>Concept massing — not a permit document.</b> The floor-plan trace is scaled to the
-    2,874 sf public record; verify every dimension on site. A vertical addition in the
-    Miami-Dade HVHZ must be designed and sealed by a Florida-licensed architect and
-    structural engineer.
-  </div>
+  <p id="note"><strong>Concept massing &mdash; not a permit document.</strong>
+    The floor-plan trace is scaled to the 2,874&nbsp;sf public record, not measured on
+    site. A vertical addition in the Miami-Dade HVHZ must be designed and sealed by a
+    Florida-licensed architect and structural engineer.</p>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const D = {"W": 48.7, "D": 72.1, "lotW": 60.0, "lotD": 150.0, "ff1": 1.0, "eave1": 10.4, "ff2": 11.5, "plate2": 9.0, "roof": 21.4, "parapet": 23.9, "bfe": 8.0, "env1": [[0.0, 0.0], [48.7, 0.0], [48.7, 72.1], [36.6, 72.1], [36.6, 53.7], [28.7, 53.7], [28.7, 49.4], [17.5, 49.4], [17.5, 58.3], [0.0, 58.3]], "env2": [[0.0, 0.0], [48.7, 0.0], [48.7, 42.0], [0.0, 42.0]], "solid2": [[0.0, 13.0], [16.0, 13.0], [16.0, 0.0], [48.7, 0.0], [48.7, 28.0], [38.0, 28.0], [38.0, 42.0], [0.0, 42.0]], "streetEnd": [[0.0, 42.0], [48.7, 42.0], [48.7, 72.1], [36.6, 72.1], [36.6, 53.7], [28.7, 53.7], [28.7, 49.4], [17.5, 49.4], [17.5, 58.3], [0.0, 58.3]], "rooms1": [{"n": "SUNROOM", "x0": 0.0, "x1": 25.8, "y0": 0.0, "y1": 19.8, "k": "room"}, {"n": "W.I.C.", "x0": 26.2, "x1": 33.8, "y0": 1.3, "y1": 21.5, "k": "room"}, {"n": "MASTER BR", "x0": 33.8, "x1": 48.7, "y0": 0.0, "y1": 11.0, "k": "room"}, {"n": "WORK AREA", "x0": 35.5, "x1": 48.7, "y0": 11.0, "y1": 22.8, "k": "room"}, {"n": "DINING ROOM", "x0": 33.8, "x1": 48.7, "y0": 22.8, "y1": 31.7, "k": "room"}, {"n": "GUEST BEDROOM", "x0": 0.0, "x1": 17.5, "y0": 19.8, "y1": 58.3, "k": "room"}, {"n": "LIVING ROOM", "x0": 17.5, "x1": 36.6, "y0": 21.8, "y1": 49.4, "k": "room"}, {"n": "KITCHEN", "x0": 36.6, "x1": 48.7, "y0": 31.7, "y1": 53.7, "k": "room"}, {"n": "UTILITY ROOM", "x0": 36.6, "x1": 48.7, "y0": 53.7, "y1": 72.1, "k": "room"}], "rooms2": [{"n": "CANAL TERRACE", "x0": 0.0, "x1": 16.0, "y0": 0.0, "y1": 13.0, "k": "terrace"}, {"n": "PRIMARY BEDROOM", "x0": 16.0, "x1": 38.0, "y0": 0.0, "y1": 20.0, "k": "room"}, {"n": "PRIMARY BATH", "x0": 38.0, "x1": 48.7, "y0": 0.0, "y1": 12.0, "k": "wet"}, {"n": "W.I.C.", "x0": 38.0, "x1": 48.7, "y0": 12.0, "y1": 22.0, "k": "room"}, {"n": "STUDY", "x0": 0.0, "x1": 16.0, "y0": 13.0, "y1": 22.0, "k": "room"}, {"n": "GALLERY", "x0": 2.0, "x1": 40.0, "y0": 22.0, "y1": 28.0, "k": "circ"}, {"n": "LAUNDRY/MECH", "x0": 40.0, "x1": 48.7, "y0": 22.0, "y1": 28.0, "k": "wet"}, {"n": "BEDROOM 2", "x0": 0.0, "x1": 15.0, "y0": 28.0, "y1": 42.0, "k": "room"}, {"n": "BATH 3", "x0": 15.0, "x1": 23.0, "y0": 28.0, "y1": 34.0, "k": "wet"}, {"n": "BATH 2", "x0": 15.0, "x1": 23.0, "y0": 34.0, "y1": 42.0, "k": "wet"}, {"n": "BEDROOM 3", "x0": 23.0, "x1": 33.0, "y0": 28.0, "y1": 42.0, "k": "room"}, {"n": "STAIR", "x0": 33.0, "x1": 38.0, "y0": 28.0, "y1": 42.0, "k": "circ"}, {"n": "FRONT TERRACE", "x0": 38.0, "x1": 48.7, "y0": 28.0, "y1": 42.0, "k": "terrace"}], "walls1": [{"x0": 25.8, "y0": 0.0, "x1": 25.8, "y1": 21.5, "bearing": true}, {"x0": 33.8, "y0": 0.0, "x1": 33.8, "y1": 31.7, "bearing": true}, {"x0": 17.5, "y0": 19.8, "x1": 17.5, "y1": 58.3, "bearing": true}, {"x0": 36.6, "y0": 31.7, "x1": 36.6, "y1": 72.1, "bearing": true}, {"x0": 0.0, "y0": 19.8, "x1": 17.5, "y1": 19.8, "bearing": false}, {"x0": 25.8, "y0": 21.5, "x1": 33.8, "y1": 21.5, "bearing": false}, {"x0": 33.8, "y0": 22.8, "x1": 48.7, "y1": 22.8, "bearing": false}, {"x0": 33.8, "y0": 31.7, "x1": 36.6, "y1": 31.7, "bearing": false}, {"x0": 36.6, "y0": 53.7, "x1": 48.7, "y1": 53.7, "bearing": false}], "open1": [{"w": "N", "a0": 3.5, "a1": 8.5, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 12.0, "a1": 17.0, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 20.0, "a1": 25.0, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 39.0, "a1": 44.0, "s": 2.5, "h": 8.0}, {"w": "W", "a0": 3.0, "a1": 7.0, "s": 0.0, "h": 7.0}, {"w": "W", "a0": 26.0, "a1": 34.0, "s": 2.5, "h": 7.0}, {"w": "E", "a0": 34.0, "a1": 40.0, "s": 3.0, "h": 7.5}, {"w": "E", "a0": 58.0, "a1": 66.0, "s": 3.0, "h": 7.5}, {"w": "S1", "a0": 1.5, "a1": 10.5, "s": 2.5, "h": 7.0}, {"w": "S2", "a0": 38.9, "a1": 46.1, "s": 2.5, "h": 7.0}, {"w": "F", "a0": 38.0, "a1": 42.0, "s": 0.0, "h": 7.0}], "open2": [{"w": "N", "a0": 17.0, "a1": 37.0, "s": 1.0, "h": 8.5}, {"w": "N", "a0": 40.0, "a1": 46.0, "s": 3.5, "h": 8.0}, {"w": "W", "a0": 14.0, "a1": 21.0, "s": 2.5, "h": 7.5}, {"w": "W", "a0": 30.0, "a1": 40.0, "s": 2.5, "h": 7.5}, {"w": "E", "a0": 2.0, "a1": 9.0, "s": 3.5, "h": 8.0}, {"w": "E", "a0": 13.0, "a1": 20.0, "s": 3.5, "h": 7.5}, {"w": "S", "a0": 1.0, "a1": 13.0, "s": 2.5, "h": 7.5}, {"w": "S", "a0": 24.0, "a1": 32.0, "s": 2.5, "h": 7.5}], "stair": {"x0": 33.0, "x1": 36.6, "y_bottom": 42.0, "y_top": 28.0, "risers": 17, "riser": 7.411764705882353, "tread": 10.5}, "frontBeamY": 42.0, "area1": 2870, "area2": 1632, "terr2": 358};
 const wrap = document.getElementById('wrap');
-const dark = matchMedia('(prefers-color-scheme: dark)').matches
-             && document.documentElement.dataset.theme !== 'light'
-             || document.documentElement.dataset.theme === 'dark';
+const T = document.documentElement.dataset.theme;
+const dark = T === 'dark' ||
+             (T !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(dark ? 0x0e1116 : 0xdfeaf2);
+scene.background = new THREE.Color(dark ? 0x0f1317 : 0xdbe6ee);
 scene.fog = new THREE.Fog(scene.background, 220, 520);
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -82,7 +156,7 @@ const camera = new THREE.PerspectiveCamera(42, 1, 0.5, 2000);
 
 // ---- lights
 scene.add(new THREE.HemisphereLight(dark?0x24303c:0xc3d9e8, dark?0x0c0f13:0x6a7358, dark?0.5:0.72));
-const sun = new THREE.DirectionalLight(0xfff4e6, dark?0.8:1.05);
+const sun = new THREE.DirectionalLight(0xfff4e6, dark?0.8:0.96);
 sun.position.set(-70, -40, 120); sun.castShadow = true;
 sun.shadow.mapSize.set(2048,2048);
 const sc = sun.shadow.camera;
@@ -100,11 +174,11 @@ const mat = {
              transparent:true, opacity:.72}),
   rail:    new THREE.MeshStandardMaterial({color:0x9dc3d6, roughness:.1, metalness:.1,
              transparent:true, opacity:.42}),
-  roof:    M(0xcfcdc6),
-  deck:    M(0xa88a66, {roughness:.95}),
+  roof:    M(0xbcbab3),
+  deck:    M(0x9c8a73, {roughness:.95}),
   grass:   M(0x8ba36d, {roughness:1}),
   water:   new THREE.MeshStandardMaterial({color:0x2f7392, roughness:.12, metalness:.25}),
-  pool:    new THREE.MeshStandardMaterial({color:0x36a3cc, roughness:.1, metalness:.2}),
+  pool:    new THREE.MeshStandardMaterial({color:0x3a94b8, roughness:.1, metalness:.2}),
   road:    M(0x8e8e91),
   pave:    M(0xb2afaa),
   hedge:   M(0x55703f, {roughness:1}),
@@ -165,11 +239,12 @@ box(G.site, 18, 36, 114, 128, 0, 0.72, mat.pool);
 // ---------- ground floor
 prism(G.f1, D.env1, 0, D.ff1, mat.stucco2);
 prism(G.f1, D.env1, D.ff1, D.eave1, mat.stucco, 'Existing ground floor');
-// entry colonnade
-for(let i=0;i<5;i++){ const px = hx(2+i*8);
-  box(G.f1, px-.55,px+.55, hy(72.1)-6.6, hy(72.1)-5.5, 0, D.eave1-0.4, mat.stucco2); }
-box(G.f1, hx(0), hx(36.6), hy(72.1)-7, hy(72.1), D.eave1-0.4, D.eave1+0.5, mat.roof);
-box(G.f1, hx(0), hx(36.6), hy(72.1)-7, hy(72.1), -0.01, 0.35, mat.pave);
+// entry porch + colonnade, at the front door in the notch
+const py0 = hy(53.7) - 7.5, py1 = hy(49.4);
+for(let i=0;i<4;i++){ const px = hx(19 + i*5.8);
+  box(G.f1, px-.55, px+.55, py0+0.5, py0+1.6, 0, D.eave1-0.4, mat.stucco2); }
+box(G.f1, hx(17.0), hx(37.2), py0, py1, D.eave1-0.4, D.eave1+0.5, mat.roof);
+box(G.f1, hx(17.0), hx(37.2), py0, py1, -0.01, 0.35, mat.pave);
 
 // ---------- glazing
 function glaze(g, o, base){
@@ -258,8 +333,8 @@ box(G.cut, hx(0), hx(D.W), hy(D.frontBeamY)-0.7, hy(D.frontBeamY)+0.7, D.ff2-1.6
   }})();
 
 // ---------- orbit controls (hand-rolled: no extra CDN file to fail on)
-const target = new THREE.Vector3(hx(24), hy(30), 8);
-let radius = 155, theta = -Math.PI/2 + 0.35, phi = 1.10;
+const target = new THREE.Vector3(hx(24), hy(26), 8);
+let radius = 152, theta = Math.PI/2 - 0.52, phi = 1.04;
 function place(){
   camera.position.set(
     target.x + radius*Math.sin(phi)*Math.cos(theta),
@@ -320,12 +395,13 @@ el.addEventListener('pointerleave', () => tip.style.display='none');
 
 // ---------- views
 const VIEWS = {
-  canal:  {t:[hx(24), hy(18), 9],  r:118, th: Math.PI/2 - 0.30, ph:1.20},
+  canal:  {t:[hx(24), hy(26), 8],  r:152, th: Math.PI/2 - 0.52, ph:1.04},
   street: {t:[hx(24), hy(58), 8],  r:118, th:-Math.PI/2 + 0.42, ph:1.22},
   aerial: {t:[hx(24), hy(36), 4],  r:185, th:-Math.PI/2 + 0.75, ph:0.72},
   side:   {t:[hx(24), hy(34), 8],  r:140, th: Math.PI + 0.05,   ph:1.32}
 };
 document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-v]').forEach(o => o.setAttribute('aria-pressed', o === b));
   const v = VIEWS[b.dataset.v];
   target.set(v.t[0], v.t[1], v.t[2]); radius = v.r; theta = v.th; phi = v.ph; place();
 });
@@ -344,10 +420,11 @@ function sync(){
     const isF2 = o.position.z > D.ff2 - 2.2;
     if(isF2) o.visible = show2;
   });
-  b2.classList.toggle('on', show2);
-  br.classList.toggle('on', showRoof);
-  bc.classList.toggle('on', cut);
+  b2.setAttribute('aria-pressed', show2);
+  br.setAttribute('aria-pressed', showRoof && !cut);
+  bc.setAttribute('aria-pressed', cut);
   br.disabled = cut;
+  document.getElementById('legend').classList.toggle('on', cut);
   stats();
 }
 b2.onclick = () => { show2 = !show2; sync(); };
@@ -363,16 +440,15 @@ bc.onclick = () => {
 function stats(){
   const tot = D.area1 + (show2 ? D.area2 : 0);
   const rows = [
-    ['Existing ground floor', D.area1.toLocaleString()+' sf'],
-    ['Proposed second floor', show2 ? D.area2.toLocaleString()+' sf' : '—'],
-    ['New terraces',          show2 ? D.terr2.toLocaleString()+' sf' : '—'],
-    ['Total conditioned',     '<b>'+tot.toLocaleString()+' sf</b>'],
-    ['FAR on 9,000 sf lot',   '<b>'+(tot/9000).toFixed(2)+'</b>'],
-    ['Top of parapet',        show2 ? '<b>'+D.parapet.toFixed(1)+"' above grade</b>"
-                                    : (D.eave1+2.9).toFixed(1)+"' above grade"]
+    ['Existing ground floor', D.area1.toLocaleString(), 0],
+    ['Proposed second floor', show2 ? D.area2.toLocaleString() : '—', 0],
+    ['New terrace',           show2 ? D.terr2.toLocaleString() : '—', 0],
+    ['Total conditioned',     tot.toLocaleString(), 1],
+    ['FAR on the 9,000 sf lot', (tot/9000).toFixed(2), 1],
+    ['Top of parapet', (show2 ? D.parapet : D.eave1+2.9).toFixed(1) + "' over grade", 1]
   ];
-  document.getElementById('stats').innerHTML =
-    rows.map(r => `<div><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+  document.getElementById('stats').innerHTML = rows.map(r =>
+    `<div><dt>${r[0]}</dt><dd class="${r[2] ? 'key' : ''}">${r[1]}</dd></div>`).join('');
 }
 
 function resize(){
@@ -383,6 +459,10 @@ function resize(){
   camera.aspect = w/h; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
+document.querySelector('[data-v="canal"]').setAttribute('aria-pressed', true);
 resize(); place(); sync();
 (function loop(){ requestAnimationFrame(loop); renderer.render(scene, camera); })();
 </script>
+
+</body>
+</html>

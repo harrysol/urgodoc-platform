@@ -10,7 +10,8 @@ floor plan.
 
 ## Start here
 
-**[`interactive-3d-v2.html`](interactive-3d-v2.html)** — open in any browser.
+**[`interactive-3d-v2.html`](interactive-3d-v2.html)** — open in any browser
+(also published at <https://claude.ai/code/artifact/b27dd04d-43c9-4ae5-8c26-ba5e6b7331e0>).
 Orbit/zoom/pan, toggle the second floor and the roofs, and switch to
 **Cutaway plan** to see both floor plates stacked with the bearing walls (green)
 and the one new beam line (red). Loads three.js from a CDN, so it needs internet
@@ -42,13 +43,16 @@ the first time.
 `photomontage/` — built before sheet A-1 was available, from an assumed
 41' × 64' box. Kept for comparison; prefer `v2/`.
 
+`artifact-viewer.html` is the same page without the `<html>/<head>/<body>`
+skeleton, for publishing as an Artifact; both are generated from one template.
+
 ## Regenerate
 
 ```bash
 pip install numpy matplotlib trimesh
 python3 tools/house_data.py         # prints the room schedule + area maths
 python3 tools/floorplan_model.py    # plans + 3D renders + cad/8220_hawthorne_from_plan.glb
-python3 tools/build_viewer.py       # interactive-3d-v2.html
+python3 tools/build_viewer.py       # interactive-3d-v2.html + artifact-viewer.html
 ```
 
 All three read `tools/house_data.py`, so the plans, the renders, the GLB and the

@@ -1,38 +1,4 @@
-#!/usr/bin/env python3
-"""
-Emit renders/interactive-3d-v2.html — a self-contained three.js viewer of the
-traced ground floor + the proposed second floor. Data comes from house_data.py
-so the viewer can never drift from the plans and the GLB.
-
-    python3 tools/build_viewer.py
-"""
-import json, os, sys
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import house_data as H
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "renders", "interactive-3d-v2.html")
-
-SOLID_2 = [(0.0, 13.0), (16.0, 13.0), (16.0, 0.0), (48.7, 0.0), (48.7, 28.0),
-           (38.0, 28.0), (38.0, 42.0), (0.0, 42.0)]
-STREET_END = [(0.0, 42.0), (48.7, 42.0), (48.7, 72.1), (36.6, 72.1), (36.6, 53.7),
-              (28.7, 53.7), (28.7, 49.4), (17.5, 49.4), (17.5, 58.3), (0.0, 58.3)]
-
-DATA = dict(
-    W=H.W, D=H.D, lotW=H.LOT_W, lotD=H.LOT_D,
-    ff1=H.FF1, eave1=H.EAVE1, ff2=H.FF2, plate2=H.PLATE2,
-    roof=H.ROOF, parapet=H.PARAPET, bfe=H.BFE,
-    env1=H.ENVELOPE_1, env2=H.ENVELOPE_2, solid2=SOLID_2, streetEnd=STREET_END,
-    rooms1=[dict(n=n, x0=a, x1=b, y0=c, y1=d, k="room") for n, a, b, c, d in H.ROOMS_1],
-    rooms2=[dict(n=n, x0=a, x1=b, y0=c, y1=d, k=k) for n, a, b, c, d, k in H.ROOMS_2],
-    walls1=[dict(x0=a, y0=b, x1=c, y1=d, bearing=e) for a, b, c, d, e in H.WALLS_1],
-    open1=[dict(w=w, a0=a, a1=b, s=s, h=h) for w, a, b, s, h in H.OPENINGS_1],
-    open2=[dict(w=w, a0=a, a1=b, s=s, h=h) for w, a, b, s, h in H.OPENINGS_2],
-    stair=H.STAIR, frontBeamY=H.FRONT_BEAM_Y,
-    area1=round(H.AREA_1), area2=round(H.AREA_2_COND), terr2=round(H.AREA_2_TERRACE),
-)
-
-HTML = """<title>8220 Hawthorne Second Floor</title>
+<title>8220 Hawthorne Second Floor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -166,7 +132,7 @@ HTML = """<title>8220 Hawthorne Second Floor</title>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const D = __DATA__;
+const D = {"W": 48.7, "D": 72.1, "lotW": 60.0, "lotD": 150.0, "ff1": 1.0, "eave1": 10.4, "ff2": 11.5, "plate2": 9.0, "roof": 21.4, "parapet": 23.9, "bfe": 8.0, "env1": [[0.0, 0.0], [48.7, 0.0], [48.7, 72.1], [36.6, 72.1], [36.6, 53.7], [28.7, 53.7], [28.7, 49.4], [17.5, 49.4], [17.5, 58.3], [0.0, 58.3]], "env2": [[0.0, 0.0], [48.7, 0.0], [48.7, 42.0], [0.0, 42.0]], "solid2": [[0.0, 13.0], [16.0, 13.0], [16.0, 0.0], [48.7, 0.0], [48.7, 28.0], [38.0, 28.0], [38.0, 42.0], [0.0, 42.0]], "streetEnd": [[0.0, 42.0], [48.7, 42.0], [48.7, 72.1], [36.6, 72.1], [36.6, 53.7], [28.7, 53.7], [28.7, 49.4], [17.5, 49.4], [17.5, 58.3], [0.0, 58.3]], "rooms1": [{"n": "SUNROOM", "x0": 0.0, "x1": 25.8, "y0": 0.0, "y1": 19.8, "k": "room"}, {"n": "W.I.C.", "x0": 26.2, "x1": 33.8, "y0": 1.3, "y1": 21.5, "k": "room"}, {"n": "MASTER BR", "x0": 33.8, "x1": 48.7, "y0": 0.0, "y1": 11.0, "k": "room"}, {"n": "WORK AREA", "x0": 35.5, "x1": 48.7, "y0": 11.0, "y1": 22.8, "k": "room"}, {"n": "DINING ROOM", "x0": 33.8, "x1": 48.7, "y0": 22.8, "y1": 31.7, "k": "room"}, {"n": "GUEST BEDROOM", "x0": 0.0, "x1": 17.5, "y0": 19.8, "y1": 58.3, "k": "room"}, {"n": "LIVING ROOM", "x0": 17.5, "x1": 36.6, "y0": 21.8, "y1": 49.4, "k": "room"}, {"n": "KITCHEN", "x0": 36.6, "x1": 48.7, "y0": 31.7, "y1": 53.7, "k": "room"}, {"n": "UTILITY ROOM", "x0": 36.6, "x1": 48.7, "y0": 53.7, "y1": 72.1, "k": "room"}], "rooms2": [{"n": "CANAL TERRACE", "x0": 0.0, "x1": 16.0, "y0": 0.0, "y1": 13.0, "k": "terrace"}, {"n": "PRIMARY BEDROOM", "x0": 16.0, "x1": 38.0, "y0": 0.0, "y1": 20.0, "k": "room"}, {"n": "PRIMARY BATH", "x0": 38.0, "x1": 48.7, "y0": 0.0, "y1": 12.0, "k": "wet"}, {"n": "W.I.C.", "x0": 38.0, "x1": 48.7, "y0": 12.0, "y1": 22.0, "k": "room"}, {"n": "STUDY", "x0": 0.0, "x1": 16.0, "y0": 13.0, "y1": 22.0, "k": "room"}, {"n": "GALLERY", "x0": 2.0, "x1": 40.0, "y0": 22.0, "y1": 28.0, "k": "circ"}, {"n": "LAUNDRY/MECH", "x0": 40.0, "x1": 48.7, "y0": 22.0, "y1": 28.0, "k": "wet"}, {"n": "BEDROOM 2", "x0": 0.0, "x1": 15.0, "y0": 28.0, "y1": 42.0, "k": "room"}, {"n": "BATH 3", "x0": 15.0, "x1": 23.0, "y0": 28.0, "y1": 34.0, "k": "wet"}, {"n": "BATH 2", "x0": 15.0, "x1": 23.0, "y0": 34.0, "y1": 42.0, "k": "wet"}, {"n": "BEDROOM 3", "x0": 23.0, "x1": 33.0, "y0": 28.0, "y1": 42.0, "k": "room"}, {"n": "STAIR", "x0": 33.0, "x1": 38.0, "y0": 28.0, "y1": 42.0, "k": "circ"}, {"n": "FRONT TERRACE", "x0": 38.0, "x1": 48.7, "y0": 28.0, "y1": 42.0, "k": "terrace"}], "walls1": [{"x0": 25.8, "y0": 0.0, "x1": 25.8, "y1": 21.5, "bearing": true}, {"x0": 33.8, "y0": 0.0, "x1": 33.8, "y1": 31.7, "bearing": true}, {"x0": 17.5, "y0": 19.8, "x1": 17.5, "y1": 58.3, "bearing": true}, {"x0": 36.6, "y0": 31.7, "x1": 36.6, "y1": 72.1, "bearing": true}, {"x0": 0.0, "y0": 19.8, "x1": 17.5, "y1": 19.8, "bearing": false}, {"x0": 25.8, "y0": 21.5, "x1": 33.8, "y1": 21.5, "bearing": false}, {"x0": 33.8, "y0": 22.8, "x1": 48.7, "y1": 22.8, "bearing": false}, {"x0": 33.8, "y0": 31.7, "x1": 36.6, "y1": 31.7, "bearing": false}, {"x0": 36.6, "y0": 53.7, "x1": 48.7, "y1": 53.7, "bearing": false}], "open1": [{"w": "N", "a0": 3.5, "a1": 8.5, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 12.0, "a1": 17.0, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 20.0, "a1": 25.0, "s": 2.5, "h": 8.0}, {"w": "N", "a0": 39.0, "a1": 44.0, "s": 2.5, "h": 8.0}, {"w": "W", "a0": 3.0, "a1": 7.0, "s": 0.0, "h": 7.0}, {"w": "W", "a0": 26.0, "a1": 34.0, "s": 2.5, "h": 7.0}, {"w": "E", "a0": 34.0, "a1": 40.0, "s": 3.0, "h": 7.5}, {"w": "E", "a0": 58.0, "a1": 66.0, "s": 3.0, "h": 7.5}, {"w": "S1", "a0": 1.5, "a1": 10.5, "s": 2.5, "h": 7.0}, {"w": "S2", "a0": 38.9, "a1": 46.1, "s": 2.5, "h": 7.0}, {"w": "F", "a0": 38.0, "a1": 42.0, "s": 0.0, "h": 7.0}], "open2": [{"w": "N", "a0": 17.0, "a1": 37.0, "s": 1.0, "h": 8.5}, {"w": "N", "a0": 40.0, "a1": 46.0, "s": 3.5, "h": 8.0}, {"w": "W", "a0": 14.0, "a1": 21.0, "s": 2.5, "h": 7.5}, {"w": "W", "a0": 30.0, "a1": 40.0, "s": 2.5, "h": 7.5}, {"w": "E", "a0": 2.0, "a1": 9.0, "s": 3.5, "h": 8.0}, {"w": "E", "a0": 13.0, "a1": 20.0, "s": 3.5, "h": 7.5}, {"w": "S", "a0": 1.0, "a1": 13.0, "s": 2.5, "h": 7.5}, {"w": "S", "a0": 24.0, "a1": 32.0, "s": 2.5, "h": 7.5}], "stair": {"x0": 33.0, "x1": 36.6, "y_bottom": 42.0, "y_top": 28.0, "risers": 17, "riser": 7.411764705882353, "tread": 10.5}, "frontBeamY": 42.0, "area1": 2870, "area2": 1632, "terr2": 358};
 const wrap = document.getElementById('wrap');
 const T = document.documentElement.dataset.theme;
 const dark = T === 'dark' ||
@@ -491,27 +457,3 @@ document.querySelector('[data-v="canal"]').setAttribute('aria-pressed', true);
 resize(); place(); sync();
 (function loop(){ requestAnimationFrame(loop); renderer.render(scene, camera); })();
 </script>
-"""
-
-ART = os.path.join(ROOT, "renders", "artifact-viewer.html")
-
-if __name__ == "__main__":
-    page = HTML.replace("__DATA__", json.dumps(DATA))
-    assert "__DATA__" not in page
-
-    # body-only, for publishing as an Artifact (the host supplies the skeleton)
-    with open(ART, "w") as f:
-        f.write(page)
-
-    # standalone document, for opening straight from the repo
-    with open(OUT, "w") as f:
-        f.write('<!doctype html>\n<html lang="en">\n<head>\n'
-                '<meta charset="utf-8">\n'
-                '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
-                '<style>html{color-scheme:light dark}body{margin:0}'
-                'img{max-width:100%}[hidden]{display:none!important}</style>\n'
-                + page + "\n</body>\n</html>\n")
-
-    for f in (OUT, ART):
-        print("wrote", os.path.relpath(f, ROOT),
-              f"({os.path.getsize(f)/1024:.0f} KB)")

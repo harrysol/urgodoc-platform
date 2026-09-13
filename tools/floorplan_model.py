@@ -42,12 +42,12 @@ STUCCO2  = "#e2dfd7"
 TRIM     = "#22242a"
 GLASS    = "#33495c"
 WOOD     = "#b08654"
-DECK     = "#c2a274"
+DECK     = "#ab9880"
 WATER    = "#3f7f9c"
 POOLW    = "#3fa8cf"
 GRASS    = "#8fae6b"
 ROAD     = "#9c9c9e"
-ROOFC    = "#cfcdc6"
+ROOFC    = "#c4c2bb"
 NEW      = "#f6f2ea"
 
 # ============================================================ 3D scene helpers
@@ -210,13 +210,13 @@ def build_house(second=True, roof=True):
             prism(e1, H.EAVE1 + 1.1, H.EAVE1 + 2.9, STUCCO2, top="#b7b4ac",
                   edge="#bab7af", lw=0.35)
 
-    # entry colonnade at the street end (reads in the listing photo)
-    cy0, cy1 = hy(72.1) - 7.0, hy(72.1)
-    for i in range(5):
-        px = hx(2.0 + i * 8.0)
-        box(px - 0.55, px + 0.55, cy0 + 0.4, cy0 + 1.5, 0, H.EAVE1 - 0.4, STUCCO2)
-    box(hx(0.0), hx(36.6), cy0, cy1, H.EAVE1 - 0.4, H.EAVE1 + 0.5, ROOFC)
-    box(hx(0.0), hx(36.6), cy0, cy1, -0.01, 0.35, "#cdc8bd")
+    # entry porch + colonnade at the front door, in the notch (see the listing photo)
+    cy0, cy1 = hy(53.7) - 7.5, hy(49.4)
+    for i in range(4):
+        px = hx(19.0 + i * 5.8)
+        box(px - 0.55, px + 0.55, cy0 + 0.5, cy0 + 1.6, 0, H.EAVE1 - 0.4, STUCCO2)
+    box(hx(17.0), hx(37.2), cy0, cy1, H.EAVE1 - 0.4, H.EAVE1 + 0.5, ROOFC)
+    box(hx(17.0), hx(37.2), cy0, cy1, -0.01, 0.35, "#cdc8bd")
 
     if not second:
         return
